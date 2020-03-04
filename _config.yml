@@ -20,6 +20,12 @@ linkedin_username: ciehanski
 # youtube_username: globalmtb
 # googleplus_username: +jekyll
 
+# Additional icon links
+additional_links:
+- title: wordpress
+  icon: fa-wordpress
+  url: https://blog.ciehanski.com
+
 # About Section
 # about_title: About Me
 about_profile_image: images/profile.jpg
