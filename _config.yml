@@ -26,7 +26,7 @@ additional_links:
   icon: fa-wordpress
   url: https://blog.ciehanski.com
 - title: email
-  icon: fa-email
+  icon: fa-envelope
   url: mailto:ryan@ciehanski.com
 
 # About Section
