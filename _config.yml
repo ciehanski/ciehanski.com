@@ -9,12 +9,12 @@ email: ryan@ciehanski.com
 website: www.github.com/ciehanski
 
 # Social links
-twitter_username: mrciehanski
+#twitter_username: mrciehanski
 github_username:  ciehanski
 # dribbble_username: jekyll
 # facebook_username: jekyll
 # flickr_username: jekyll
-instagram_username: mrciehanski
+#instagram_username: mrciehanski
 linkedin_username: ciehanski
 # pinterest_username: jekyll
 # youtube_username: globalmtb
@@ -25,6 +25,9 @@ additional_links:
 - title: wordpress
   icon: fa-wordpress
   url: https://blog.ciehanski.com
+- title: email
+  icon: fa-email
+  url: mailto:ryan@ciehanski.com
 
 # About Section
 # about_title: About Me
