@@ -2,22 +2,22 @@
   name: libgen-cli
   link: github.com/ciehanski/libgen-cli
   github: ciehanski/libgen-cli
-  quote: >
-    This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
+#   quote: >
+#     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
 
 - layout: left
   name: onionbox
   link: github.com/ciehanski/onionbox
   github: ciehanski/onionbox
-  quote: >
-    This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
+#   quote: >
+#     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
 
 - layout: left
   name: pigeon
   link: github.com/ciehanski/pigeon
   github: ciehanski/pigeon
-  quote: >
-    This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
+#   quote: >
+#     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
