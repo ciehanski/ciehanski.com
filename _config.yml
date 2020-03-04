@@ -4,7 +4,7 @@ favicon: images/favicon.ico
 
 # Personal info
 name: Ryan Ciehanski
-title: Passionate Software Developer & Entrepreneur
+title: Software Engineer
 email: ryan@ciehanski.com
 website: www.github.com/ciehanski
 
@@ -41,11 +41,13 @@ about_content: | # this will include new lines to allow paragraphs
 # More Section
 more_title: When I'm Not Programming
 more_content: | # this will include new lines to allow paragraphs
-  Alongside my interests in networks and software engineering some of my other interests and hobbies are:
+  Alongside my interests in software engineering, IT security, priacy & computer infrastructure some of my other interests and hobbies include:
    - Watches
    - Entrepreneurship
    - Browsing Reddit
-   - Gin
+   - Reading
+   - Watching Leonardo DiCaprio Movies
+   - Contributing To Wikipedia
 
 # Footer
 footer_show_references: false
