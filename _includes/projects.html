@@ -2,7 +2,7 @@
   <h3>{{ site.projects_title | default: "Projects" }}</h3>
   {% for project in site.data.projects %}
     {% include {{ project.layout | default: 'left' | append: ".html" }} item=project %}
-    <object data="https://img.shields.io/github/stars/badges/shields.svg?style=social" alt="{{ project.name }} GitHub stars">
+    <object data="https://img.shields.io/github/stars/badges/shields.svg?style=social">
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="90" height="20">
         <style>a #llink:hover{fill:url(#b);stroke:#ccc}a #rlink:hover{fill:#4183c4}</style>
         <linearGradient id="a" x2="0" y2="100%"><stop offset="0" stop-color="#fcfcfc" stop-opacity="0"/><stop offset="1" stop-opacity=".1"/></linearGradient>
