@@ -5,22 +5,4 @@
   quote: >
     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
-    [![ciehanski/libgen-cli - GitHub](https://gh-card.dev/repos/ciehanski/libgen-cli.svg)](https://github.com/ciehanski/libgen-cli)
-    
-- layout: top
-  #name: Super awesome project
-  #link: github.com/sproogen
-  #github: sproogen/resume-theme
-  quote: >
-    This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
-  description: | # this will include new lines to allow paragraphs
-    [![ciehanski/onionbox - GitHub](https://gh-card.dev/repos/ciehanski/onionbox.svg)](https://github.com/ciehanski/onionbox)
-    
-- layout: top-right
-  #name: Super awesome project
-  #link: github.com/sproogen
-  #github: sproogen/resume-theme
-  quote: >
-    This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
-  description: | # this will include new lines to allow paragraphs
-    [![ciehanski/pigeon - GitHub](https://gh-card.dev/repos/ciehanski/pigeon.svg)](https://github.com/ciehanski/pigeon)
+        [![ciehanski/onionbox - GitHub](https://gh-card.dev/repos/ciehanski/onionbox.svg)] (https://github.com/ciehanski/onionbox)[![ciehanski/libgen-cli - GitHub](https://gh-card.dev/repos/ciehanski/libgen-cli.svg)](https://github.com/ciehanski/libgen-cli) [![ciehanski/pigeon - GitHub](https://gh-card.dev/repos/ciehanski/pigeon.svg)](https://github.com/ciehanski/pigeon)
