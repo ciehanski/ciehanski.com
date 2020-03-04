@@ -1,6 +1,6 @@
 - layout: left
   name: libgen-cli
-  link: github.com/ciehanski/libgen-cli
+  link: https://github.com/ciehanski/libgen-cli
   github: ciehanski/libgen-cli
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
@@ -9,7 +9,7 @@
 
 - layout: left
   name: onionbox
-  link: github.com/ciehanski/onionbox
+  link: https://github.com/ciehanski/onionbox
   github: ciehanski/onionbox
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
@@ -18,7 +18,7 @@
 
 - layout: left
   name: pigeon
-  link: github.com/ciehanski/pigeon
+  link: https://github.com/ciehanski/pigeon
   github: ciehanski/pigeon
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
