@@ -27,7 +27,7 @@ additional_links:
   url: https://blog.ciehanski.com
 - title: email
   icon: fa-envelope
-  url: mailto:ryan@ciehanski.com
+  url: mailto:ryan@ciehanski.com?Subject=Hey%20Ryan!
 
 # About Section
 # about_title: About Me
