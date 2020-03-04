@@ -1,25 +1,25 @@
 - layout: top-middle
-  #name: Super awesome project
-  #link: github.com/sproogen
-  #github: sproogen/resume-theme
+  name: Super awesome project
+  link: github.com/sproogen
+  github: sproogen/resume-theme
   quote: >
     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
     [![ciehanski/libgen-cli - GitHub](https://gh-card.dev/repos/ciehanski/libgen-cli.svg)](https://github.com/ciehanski/libgen-cli)
     
 - layout: top-left
-  #name: Super awesome project
-  #link: github.com/sproogen
-  #github: sproogen/resume-theme
+  name: Super awesome project
+  link: github.com/sproogen
+  github: sproogen/resume-theme
   quote: >
     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
     [![ciehanski/onionbox - GitHub](https://gh-card.dev/repos/ciehanski/onionbox.svg)](https://github.com/ciehanski/onionbox)
     
 - layout: top-right
-  #name: Super awesome project
-  #link: github.com/sproogen
-  #github: sproogen/resume-theme
+  name: Super awesome project
+  link: github.com/sproogen
+  github: sproogen/resume-theme
   quote: >
     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
