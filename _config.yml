@@ -1,23 +1,23 @@
 # Site
-repository: sproogen/resume-theme
+repository: ciehanski/ciehanski.com
 favicon: images/favicon.ico
 
 # Personal info
-name: Brett Harris
-title: Senior Network System Administrator
-email: brett.h@email.co.uk
-website: www.github.com/sproogen/resume-theme
+name: Ryan Ciehanski
+title: Passionate Software Developer & Entrepreneur
+email: ryan@ciehanski.com
+website: www.github.com/ciehanski
 
 # Social links
-twitter_username: facespics
-github_username:  sproogen
+twitter_username: mrciehanski
+github_username:  ciehanski
 # dribbble_username: jekyll
 # facebook_username: jekyll
 # flickr_username: jekyll
-instagram_username: chillwildlife
-linkedin_username: jameswgrant
+instagram_username: mrciehanski
+linkedin_username: ciehanski
 # pinterest_username: jekyll
-youtube_username: globalmtb
+# youtube_username: globalmtb
 # googleplus_username: +jekyll
 
 # About Section
@@ -50,7 +50,7 @@ more_content: | # this will include new lines to allow paragraphs
 footer_show_references: true
 
 # Build settings
-remote_theme: sproogen/resume-theme
+remote_theme: ciehanski/ciehanski.com
 
 sass:
   sass_dir: _sass
