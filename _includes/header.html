@@ -92,7 +92,7 @@
         {%- endif -%}
         {% for link in site.additional_links %}
           <li>
-            <a target="_blank" href="{{ project.url }}" class="button button--sacnite button--round-l">
+            <a target="_blank" href="{{ link.url }}" class="button button--sacnite button--round-l">
               <i class="{{ link.icon }}" title="{{ link.title | escape }}"></i>
             </a>
           </li>
