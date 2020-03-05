@@ -1,7 +1,7 @@
 - layout: left
   name: libgen-cli
   link: github.com/ciehanski/libgen-cli
-  github: ciehanski/libgen-cli
+#   github: ciehanski/libgen-cli
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
