@@ -30,7 +30,7 @@ additional_links:
   url: mailto:ryan@ciehanski.com?Subject=Hey%20Ryan!
 
 # About Section
-# about_title: About Me
+about_title: About Me
 about_profile_image: images/profile.jpg
 about_content: | # this will include new lines to allow paragraphs
   Congrats! You found me. I've been tinkering with computers since I was 10 years old. I built my first computer when I was 11 (thank you Dad) and the rest is history. I am always learning and adding something new to my toolbox.  
@@ -39,10 +39,10 @@ about_content: | # this will include new lines to allow paragraphs
   <mark>~Ryan</mark>
 
 # Projects Section
-# projects_title: Projects
+projects_title: Projects
 
 # Experience Section
-# experience_title: Experience
+experience_title: Work Experience
 
 # Education Section
 # educaton_title: Education
