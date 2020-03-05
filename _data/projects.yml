@@ -5,7 +5,7 @@
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
-     A CLI tool used to access the Library Genesis dataset; written in Go. I built this tool when I found out about the [Library Gensis](https://en.wikipedia.org/wiki/Library_Genesis) project. I'm a firm beliver in the ideals behind the project, but the websites are awful to navigate and the download pages are riddled with adware. So, to mitigate this issue I created libgen-cli (originally forked from [Antoine Chiny](https://github.com/TonyChG/libgen-cli))! Currently <mark>libgen-cli</mark> is being used in various countries around the world, which I think is cool.
+     A CLI tool used to access the Library Genesis dataset; written in Go. I built this tool when I discovered the [Library Gensis](https://en.wikipedia.org/wiki/Library_Genesis) project. I'm a firm beliver in the ideals behind the project, but the websites are awful to navigate and the download pages are riddled with adware. So, to mitigate this issue I created libgen-cli (originally forked from [Antoine Chiny](https://github.com/TonyChG/libgen-cli))! Currently <mark>libgen-cli</mark> is being used in various countries around the world, which I think is cool.
 
 - layout: left
   name: onionbox
