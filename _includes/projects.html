@@ -2,6 +2,8 @@
   <h3>{{ site.projects_title | default: "Projects" }}</h3>
   {% for project in site.data.projects %}
     {% include {{ project.layout | default: 'left' | append: ".html" }} item=project %}
-    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/ciehanski/{{ project.name }}?style=social">
+    <a target="_blank" href="{{ project.link }}">
+      <img alt="GitHub Stars" src="https://img.shields.io/github/stars/ciehanski/{{ project.name }}?style=social">
+    </a>
   {% endfor %}
 </div>
