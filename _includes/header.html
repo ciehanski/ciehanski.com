@@ -83,6 +83,13 @@
             </a>
           </li>
         {%- endif -%}
+        {%- if site.twitter_username -%}
+          <li>
+            <a target="_blank" href="https://twitter.com/{{ site.twitter_username| cgi_escape | escape }}" class="button button--sacnite button--round-l">
+              <i class="fab fa-twitter" title="Twitter link"></i>
+            </a>
+          </li>
+        {%- endif -%}
         {% for link in site.additional_links %}
           <li>
             <a target="_blank" href="{{ project.url }}" class="button button--sacnite button--round-l">
@@ -90,13 +97,6 @@
             </a>
           </li>
         {% endfor %}
-          {%- if site.twitter_username -%}
-          <li>
-            <a target="_blank" href="https://twitter.com/{{ site.twitter_username| cgi_escape | escape }}" class="button button--sacnite button--round-l">
-              <i class="fab fa-twitter" title="Twitter link"></i>
-            </a>
-          </li>
-        {%- endif -%}
         {%- if site.instagram_username -%}
           <li>
             <a target="_blank" href="https://www.instagram.com/{{ site.instagram_username| cgi_escape | escape }}" class="button button--sacnite button--round-l">
