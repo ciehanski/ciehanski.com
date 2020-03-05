@@ -23,10 +23,10 @@ linkedin_username: ciehanski
 # Additional icon links
 additional_links:
 - title: wordpress
-  icon: fa-wordpress
+  icon: fab fa-wordpress
   url: https://blog.ciehanski.com
 - title: email
-  icon: fa-at
+  icon: far fa-envelope
   url: mailto:ryan@ciehanski.com?Subject=Hey%20Ryan!
 
 # About Section
