@@ -86,7 +86,7 @@
         {% for link in site.additional_links %}
           <li>
             <a target="_blank" href="{{ project.url }}" class="button button--sacnite button--round-l">
-              <i class="fab {{ link.icon }}" title="{{ link.title | escape }}"></i>
+              <i class="{{ link.icon }}" title="{{ link.title | escape }}"></i>
             </a>
           </li>
         {% endfor %}
