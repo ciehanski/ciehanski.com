@@ -168,6 +168,11 @@ body {
 
 .header-right {
   text-align: right;
+  margin-top: 30px;
+
+  @media print {
+    margin-top: 0px;
+  }
 }
 
 .header-left {
