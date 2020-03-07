@@ -1,4 +1,4 @@
-- layout: left
+- layout: top-middle
   name: libgen-cli
   link: github.com/ciehanski/libgen-cli
 #   github: ciehanski/libgen-cli
@@ -7,7 +7,7 @@
   description: | # this will include new lines to allow paragraphs
      A CLI tool used to access the Library Genesis dataset; written in Go. I built this tool when I discovered the [Library Gensis](https://en.wikipedia.org/wiki/Library_Genesis) project. I'm a firm believer in the ideals behind the project, but the websites used to acces their dataset are difficult to navigate and download pages are riddled with adware. So, to mitigate this poor user expierence, I created <mark>libgen-cli</mark> (originally forked from [Antoine Chiny](https://github.com/TonyChG/libgen-cli))! Currently <mark>libgen-cli</mark> is being used in various countries around the world, which I think is cool.
 
-- layout: left
+- layout: top-middle
   name: onionbox
   link: github.com/ciehanski/onionbox
 #   github: ciehanski/onionbox
@@ -16,7 +16,7 @@
   description: | # this will include new lines to allow paragraphs
     <mark>onionbox</mark> allows users to send and receive files securely through Tor. It works by embedding a local copy of Tor within the <mark>onionbox</mark> binary where API calls can be made to connect to the Tor network and create a hidden onion service. A simple webpage is then hosted at the root of that hidden onion service's URL where users can upload files and share a uniquely generated URL with their recipients for download. 
 
-- layout: left
+- layout: top-middle
   name: pigeon
   link: github.com/ciehanski/pigeon
 #   github: ciehanski/pigeon
