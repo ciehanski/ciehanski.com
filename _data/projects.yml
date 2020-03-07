@@ -14,7 +14,7 @@
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
-    Send and receive files securely through Tor.
+    onionbox allows users to send and receive files securely through Tor. It works by embedding a local copy of Tor within the onionbox binary where API calls can be made to connect to the Tor network and create a hidden onion service. A simple webpage is then hosted at the root of that hidden onion service's URL where users can upload files and share a uniquely generated URL with their recipients for download. 
 
 - layout: left
   name: pigeon
