@@ -4,9 +4,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>{{ site.name }} | {{ site.title }}</title>
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/assets/images/profile.jpg">
   {%- seo title=false -%}
-  <meta property="og:type" content="website"
-  <meta property="og:image" content="/assets/images/profile.jpg"
 
   <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ site.favicon | default: '/assets/favicon.ico' | relative_url }}">
