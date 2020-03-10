@@ -85,21 +85,21 @@
         {%- endif -%}
         {%- if site.twitter_username -%}
           <li>
-            <a target="_blank" rel="nofollow" href="https://twitter.com/{{ site.twitter_username| cgi_escape | escape }}" class="button button--sacnite button--round-l">
+            <a target="_blank" rel="nofollow" href="https://twitter.com/{{ site.twitter_username | cgi_escape | escape }}" class="button button--sacnite button--round-l">
               <i class="fab fa-twitter" title="Twitter"></i>
             </a>
           </li>
         {%- endif -%}
         {% for link in site.additional_links %}
           <li>
-            <a target="_blank" rel="nofollow" href="{{ link.url }}" class="button button--sacnite button--round-l">
+            <a target="_blank" rel="nofollow" href="{{ link.url | cgi_escape | escape }}" class="button button--sacnite button--round-l">
               <i class="{{ link.icon }}" title="{{ link.title | escape }}"></i>
             </a>
           </li>
         {% endfor %}
         {%- if site.instagram_username -%}
           <li>
-            <a target="_blank" rel="nofollow" href="https://www.instagram.com/{{ site.instagram_username| cgi_escape | escape }}" class="button button--sacnite button--round-l">
+            <a target="_blank" rel="nofollow" href="https://www.instagram.com/{{ site.instagram_username | cgi_escape | escape }}" class="button button--sacnite button--round-l">
               <i class="fab fa-instagram" title="Instagram"></i>
             </a>
           </li>
