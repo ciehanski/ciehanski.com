@@ -7,6 +7,7 @@ name: Ryan Ciehanski
 title: Software Engineer
 email: ryan@ciehanski.com
 website: www.github.com/ciehanski
+logo: assets/images/profile.jpg
 
 # Social links
 twitter_username: mrciehanski
@@ -22,9 +23,9 @@ linkedin_username: ciehanski
 
 # Additional icon links
 additional_links:
-- title: My Blog
-  icon: fab fa-wordpress
-  url: https://blog.ciehanski.com
+# - title: My Blog
+#   icon: fab fa-wordpress
+#   url: https://blog.ciehanski.com
 - title: Email Me
   icon: fas fa-envelope
   url: mailto:ryan@ciehanski.com?Subject=Hey%20Ryan!
@@ -56,6 +57,17 @@ more_content: | # this will include new lines to allow paragraphs
    - Entrepreneurship
    - Watching Leonardo DiCaprio Movies
    - Contributing To Wikipedia
+   
+# SEO
+twitter:
+  username: mrciehanski
+  card: summary
+social:
+  name: Ryan Ciehanski
+  links:
+    - https://twitter.com/mrciehanski
+    - https://www.linkedin.com/in/ciehanski
+    - https://github.com/ciehanski
 
 # Footer
 footer_show_references: false
