@@ -7,6 +7,12 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="/assets/images/profile.jpg">
   {%- seo title=false -%}
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{%if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+  <meta name="twitter:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="twitter:site" content="@mrciehanski">
+  <meta name="twitter:creator" content="@mrciehanski">
+  <meta name="twitter:image" content="/assets/images/profile.jpg">
 
   <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
   <link rel="shortcut icon" type="image/x-icon" href="{{ site.favicon | default: '/assets/favicon.ico' | relative_url }}">
