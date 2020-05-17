@@ -13,21 +13,12 @@ logo: assets/images/profile.jpg
 # Social links
 twitter_username: mrciehanski
 github_username: ciehanski
-# dribbble_username: jekyll
-# facebook_username: jekyll
-# flickr_username: jekyll
-#instagram_username: mrciehanski
+instagram_username: mrciehanski
 linkedin_username: ciehanski
-# pinterest_username: jekyll
-# youtube_username: globalmtb
-# googleplus_username: +jekyll
 stackoverflow_username: "774677"
 
 # Additional icon links
 additional_links:
-# - title: My Blog
-#   icon: fab fa-wordpress
-#   url: https://blog.ciehanski.com
 - title: Email Me
   icon: fas fa-envelope
   url: mailto:ryan@ciehanski.com?Subject=Hey%20Ryan!
