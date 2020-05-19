@@ -23,5 +23,14 @@
 #   quote: >
 #     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
   description: | # this will include new lines to allow paragraphs
-    WebSocket instant messaging utilizing Tor hidden services.
+    <mark>pigeon</mark> is a WebSocket instant messaging service utilizing Tor hidden services.
+
+- layout: left
+  name: oniongen-hs
+  link: github.com/ciehanski/oniongen-hs
+#   github: ciehanski/pigeon
+#   quote: >
+#     This is probably one of the greatest apps ever created, if you don't agree you're probably wrong.
+  description: | # this will include new lines to allow paragraphs
+    <mark>oniongen-hs</mark> is a vanity URL generator for Tor version 3 .onion addresses, lovingly written in Haskell. It was heavily inspired by wonderful project: [oniongen-go](https://github.com/rdkr/oniongen-go) by [rdkr](https://github.com/rdkr). This was an extremely satisfying & fun project with the purpose of teaching myself <mark>Haskell</mark>.
     
