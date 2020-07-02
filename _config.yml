@@ -4,7 +4,7 @@ favicon: assets/images/favicon.ico
 
 # Personal info
 name: Ryan Ciehanski
-title: Software Engineer
+title: I like to make things
 email: ryan@ciehanski.com
 website: www.github.com/ciehanski
 tagline:
@@ -41,14 +41,13 @@ projects_title: My Projects
 # educaton_title: Education
 
 # More Section
-more_title: When I'm Not Programming
-more_content: | # this will include new lines to allow paragraphs
-  Alongside my interests in software engineering, IT security, & online privacy, some of my other interests & hobbies include:
-   - Browsing Reddit
-   - Watches
-   - Entrepreneurship
-   - Watching Leonardo DiCaprio Movies
-   - Contributing To Wikipedia
+#more_title: When I'm Not Programming
+#more_content: | # this will include new lines to allow paragraphs
+#  Alongside my interests in software engineering, IT security, & online privacy, some of my other interests & hobbies include:
+#   - Entrepreneurship
+#   - Watching Leonardo DiCaprio Movies
+#   - Watches
+#   - Contributing To Wikipedia
    
 # SEO
 twitter:
