@@ -11,7 +11,7 @@ tagline:
 logo: assets/images/profile.jpg
 
 # Social links
-twitter_username: mrciehanski
+twitter_username: rciehanski
 github_username: ciehanski
 linkedin_username: ciehanski
 stackoverflow_username: "774677"
@@ -51,12 +51,12 @@ more_content: | # this will include new lines to allow paragraphs
    
 # SEO
 twitter:
-  username: mrciehanski
+  username: rciehanski
   card: summary
 social:
   name: Ryan Ciehanski
   links:
-    - https://twitter.com/mrciehanski
+    - https://twitter.com/rciehanski
     - https://www.linkedin.com/in/ciehanski
     - https://github.com/ciehanski
 
@@ -64,7 +64,7 @@ social:
 footer_show_references: false
 
 # Build settings
-remote_theme: sproogen/modern-resume-theme
+remote_theme: sproogen/modern-resume-theme@v1.8.8
 
 sass:
   sass_dir: _sass
