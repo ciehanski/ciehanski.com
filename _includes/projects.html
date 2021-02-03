@@ -1,9 +1,9 @@
 <div class="container projects-container">
   <h3>{{ site.projects_title | default: "Projects" }}</h3>
-  <a target="_blank" rel="nofollow" href="https://{{ project.link | escape }}">
-    <img alt="{{ project.name | escape }} GitHub Badge" src="https://img.shields.io/github/stars/ciehanski/{{ project.name | escape }}?style=social">
-  </a>
   {% for project in site.data.projects %}
+    <a target="_blank" rel="nofollow" href="https://{{ project.link | escape }}">
+      <img alt="{{ project.name | escape }} GitHub Badge" src="https://img.shields.io/github/stars/ciehanski/{{ project.name | escape }}?style=social">
+    </a>
     {% include {{ project.layout | default: 'left' | append: ".html" }} item=project %}
   {% endfor %}
 </div>
