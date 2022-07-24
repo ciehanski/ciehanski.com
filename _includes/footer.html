@@ -1,0 +1,21 @@
+<footer class="footer">
+
+	<div class="wrap">
+
+		<div class="footer__content">
+
+			<p class="footer__text">{{ site.data.settings.footer_settings.footer_tagline }}</p>
+
+			<div class="footer__copyright">
+				<span>© {{ 'now' | date: "%Y" }} {{
+					site.data.settings.basic_settings.site_title }}</span><br>
+				<span>gpg: 72ca39d748da20a47c72b0a9ecd993826b0d6527</span> 
+			</div>
+
+			{% include socials.html %}
+
+		</div>
+
+	</div>
+
+</footer>
