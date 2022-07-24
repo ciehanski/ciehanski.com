@@ -12,7 +12,7 @@ onselectstart="false">
 
 Alongside my interests in software engineering, IT security, & online privacy, some of my other interests & hobbies include:
 
-- [<mark>Livible Cities (!!)</mark>](https://www.youtube.com/c/notjustbikes)
+- [<mark>Livable Cities (!!)</mark>](https://www.youtube.com/c/notjustbikes)
 - Astrophotography
 - Soccer
 - Biking
