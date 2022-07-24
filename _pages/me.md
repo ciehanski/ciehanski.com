@@ -18,5 +18,5 @@ Alongside my interests in software engineering, IT security, & online privacy, s
 - Biking
 - Chess
 - Architecture
-- Watches
+- Timepieces 
 - Entrepreneurship
