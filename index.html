@@ -11,11 +11,11 @@ featured_image: /images/me.jpg
 
 		{% for project in site.projects reversed %}
 
-		<div class="listing-item">
+		<div class="listing-item" ondragstart="return false;" draggable="false">
 
 			<a class="listing-item__link" href="{{ project.url | relative_url }}">
 
-				<div class="listing-item__image" ondragstart="return false;" draggable="false">
+				<div class="listing-item__image">
 					<img src="{{ project.featured_image | relative_url }}" loading="lazy" alt="{{ project.title }}">
 				</div>
 
