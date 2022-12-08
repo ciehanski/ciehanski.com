@@ -1,6 +1,6 @@
 ---
-title: my code 
-subtitle: Checkout my most notable open-source projects. Pull requests and issues are welcome!
+title: my code
+subtitle: Checkout my most notable open-source projects. Pull requests and issues are welcome! All code is mirrored and accessible at <a href="https://git.ciehanski.com">git.ciehanski.com</a>.
 description: Checkout my most notable open-source projects. Pull requests and issues are welcome!
 ---
 
