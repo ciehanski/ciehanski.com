@@ -48,6 +48,9 @@ const state = {
   fadeT: 0,
   focus: 0.5,
   pan: 0,
+  // the slow side-to-side drift: on by default on phones and tablets, off elsewhere
+  drift: store.get('drift', matchMedia('(pointer: coarse)').matches),
+  panHome: false,
   sceneT: 0,
   tour: store.get('tour', !reducedMotion),
   weatherMode: params.get('weather') || 'live', // always start on real Chicago weather
@@ -111,15 +114,21 @@ function fit(focus = state.focus) {
     Object.assign(view.style, { width: w + 'px', height: h + 'px', left: left + 'px', top: top + 'px' });
   layout = { scale, left, top, slack, w };
   document.body.classList.toggle('banded', h < innerHeight - 2);
+  $('chip-drift').hidden = !slack;                                                 // nothing to pan when the whole width fits
 }
 addEventListener('resize', () => fit());
 
-// Phones: drag sideways to look around the scene; when left alone it drifts
-// slowly from side to side so the whole room gets seen.
+// When the scene is wider than the screen: drag sideways to look around, and
+// (with Drift on) it pans slowly from side to side so the whole room gets seen.
+// Turning Drift off eases the view back to the centre.
 let drag = null, draggedAt = -1e9, suppressClick = false;
 function panStep(dt) {
   if (!layout.slack) return;
-  if (!drag && !reducedMotion && performance.now() - draggedAt > 9000) {
+  if (drag) return fit();
+  if (state.panHome) {
+    state.pan += (0 - state.pan) * Math.min(1, dt * 0.8);
+    if (Math.abs(state.pan) < 0.0005) { state.pan = 0; state.panHome = false; }
+  } else if (state.drift && !reducedMotion && performance.now() - draggedAt > 9000) {
     const target = layout.slack * 0.9 * Math.sin(state.t * (2 * Math.PI / 90));
     state.pan += (target - state.pan) * Math.min(1, dt * 0.35);
   }
@@ -417,6 +426,17 @@ function showWeather() {
   applyMix(SCENES[state.next ?? state.idx]);
 }
 
+function showDrift() {
+  $('drift-state').textContent = state.drift ? 'on' : 'off';
+  $('chip-drift').classList.toggle('on', state.drift);
+}
+function toggleDrift() {
+  state.drift = !state.drift;
+  state.panHome = !state.drift;
+  store.set('drift', state.drift);
+  showDrift();
+}
+
 function showTour() {
   $('tour-state').textContent = state.tour ? 'on' : 'off';
   $('chip-tour').classList.toggle('on', state.tour);
@@ -632,10 +652,10 @@ async function render() {
     const touch = matchMedia('(pointer: coarse)').matches;
     const gestures = [
       ['Tap', 'the scenery to start the music (and send a heart)'], ['Drag', 'sideways to look around the scene'],
-      ['Scene chip', 'pick a scene'], ['Tour', 'rotate scenes by themselves'], ['Weather', 'live → clear → rain → snow'],
+      ['Scene chip', 'pick a scene'], ['Tour', 'rotate scenes by themselves'], ['Drift', 'slowly pan across the scene'], ['Weather', 'live → clear → rain → snow'],
     ];
     const keys = touch ? gestures : [
-      ['Space', 'play / pause music'], ['N / B', 'next / previous track'], ['← →', 'previous / next scene'], ['S', 'scene picker'], ['T', 'tour (auto-rotate)'],
+      ['Space', 'play / pause music'], ['N / B', 'next / previous track'], ['← →', 'previous / next scene'], ['S', 'scene picker'], ['T', 'tour (auto-rotate)'], ['D', 'drift (slow pan, when the scene is wider than the window)'],
       ['W', 'weather: live → clear → rain → snow'], ['M', 'mute ambience'], ['P', 'playlist'], ['F', 'fullscreen'],
       ['1 2 3', 'about, projects, blog'], ['Esc', 'close'],
     ];
@@ -711,6 +731,7 @@ musicInput.addEventListener('input', () => setMusicVol(+musicInput.value));
 $('btn-list').addEventListener('click', () => togglePop('music'));
 $('btn-scenes').addEventListener('click', () => togglePop('scenes'));
 $('chip-scene').addEventListener('click', () => togglePop('scenes'));
+$('chip-drift').addEventListener('click', toggleDrift);
 $('chip-tour').addEventListener('click', () => { state.tour = !state.tour; state.sceneT = 0; store.set('tour', state.tour); showTour(); });
 $('chip-weather').addEventListener('click', cycleWeather);
 $('btn-full').addEventListener('click', toggleFull);
@@ -749,14 +770,16 @@ function toggleFull() {
 }
 
 const ambInput = $('amb');
-ambInput.value = store.get('ambience', 35);
-let lastVol = +ambInput.value || 35;
+// Ambience (rain, city hum, trains, keyboard) starts low so the music leads; the slider or M changes it.
+// (A fresh storage key, so visitors who had the old default of 35 get the new, quieter one too.)
+ambInput.value = store.get('ambience2', 12);
+let lastVol = +ambInput.value || 12;
 function setAmb(v) {
   ambInput.value = v;
   amb.start();
   amb.setVolume(v / 100);
   applyMix(SCENES[state.next ?? state.idx]);
-  store.set('ambience', +v);
+  store.set('ambience2', +v);
   setIcon($('amb-icon'), +v ? 'rain' : 'mute');
   ambInput.style.setProperty('--fill', v + '%');
 }
@@ -772,11 +795,12 @@ addEventListener('keydown', (e) => {
   else if (k === 'n') music?.next();
   else if (k === 'b') music?.prev();
   else if (k === 't') $('chip-tour').click();
+  else if (k === 'd' && layout.slack) toggleDrift();
   else if (k === 'w') cycleWeather();
   else if (k === 's') togglePop('scenes');
   else if (k === 'p') togglePop('music');
   else if (k === 'f') toggleFull();
-  else if (k === 'm') { const v = +ambInput.value; if (v) { lastVol = v; setAmb(0); } else setAmb(lastVol || 35); }
+  else if (k === 'm') { const v = +ambInput.value; if (v) { lastVol = v; setAmb(0); } else setAmb(lastVol || 12); }
   else if (k === '1') navigate('/about');
   else if (k === '2') navigate('/projects');
   else if (k === '3') navigate('/blog');
@@ -850,6 +874,7 @@ hydrateIcons();
 SCENES[state.idx].build();
 showSceneInfo(SCENES[state.idx]);
 showTour();
+showDrift();
 showWeather();
 setAmb(+ambInput.value);
 tick();
