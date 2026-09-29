@@ -47,6 +47,7 @@ const state = {
   next: null,
   fadeT: 0,
   focus: 0.5,
+  pan: 0,
   sceneT: 0,
   tour: store.get('tour', !reducedMotion),
   weatherMode: params.get('weather') || 'live', // always start on real Chicago weather
@@ -88,17 +89,42 @@ const bufA = canvasHi(), bufB = canvasHi();
 let layout = { scale: 1, left: 0, top: 0 };
 
 // `focus` is the horizontal point (0..1) of the scene kept centred when the
-// screen is narrower than the scene; it pans between scenes during a fade.
+// screen is narrower than the scene; `state.pan` shifts it (drag, or the slow
+// drift on phones).
+//
+// On a tall screen (a phone held upright) filling the height would zoom in on
+// a quarter of the scene, so instead it shows a wide band across the middle
+// (about 60% of the scene's width) over a soft, blurred copy of itself.
+const PORTRAIT_SHOW = 0.6;
+const backdrop = $('backdrop'), bg = backdrop.getContext('2d');
 function fit(focus = state.focus) {
   state.focus = focus;
-  const scale = Math.max(innerWidth / W, innerHeight / H);
+  const cover = Math.max(innerWidth / W, innerHeight / H);
+  const tall = innerHeight > innerWidth * 1.15;
+  const scale = tall ? Math.min(cover, innerWidth / (W * PORTRAIT_SHOW)) : cover;
   const w = W * scale, h = H * scale;
-  const left = Math.min(0, Math.max(innerWidth - w, innerWidth / 2 - focus * w));
-  const top = (innerHeight - h) / 2;
-  Object.assign(view.style, { width: w + 'px', height: h + 'px', left: left + 'px', top: top + 'px' });
-  layout = { scale, left, top };
+  const slack = Math.max(0, (w - innerWidth) / 2 / w);                             // how far the view can pan, in focus units
+  state.pan = Math.max(-slack, Math.min(slack, state.pan));
+  const left = Math.round(Math.min(0, Math.max(innerWidth - w, innerWidth / 2 - (focus + state.pan) * w)));
+  const top = Math.round(h < innerHeight ? (innerHeight - h) * 0.46 : (innerHeight - h) / 2);
+  if (left !== layout.left || top !== layout.top || scale !== layout.scale)
+    Object.assign(view.style, { width: w + 'px', height: h + 'px', left: left + 'px', top: top + 'px' });
+  layout = { scale, left, top, slack, w };
+  document.body.classList.toggle('banded', h < innerHeight - 2);
 }
 addEventListener('resize', () => fit());
+
+// Phones: drag sideways to look around the scene; when left alone it drifts
+// slowly from side to side so the whole room gets seen.
+let drag = null, draggedAt = -1e9, suppressClick = false;
+function panStep(dt) {
+  if (!layout.slack) return;
+  if (!drag && !reducedMotion && performance.now() - draggedAt > 9000) {
+    const target = layout.slack * 0.9 * Math.sin(state.t * (2 * Math.PI / 90));
+    state.pan += (target - state.pan) * Math.min(1, dt * 0.35);
+  }
+  fit();
+}
 
 function sky() {
   const w = weather();
@@ -164,8 +190,11 @@ function step(now) {
     }
   }
   drawHearts(dt);
+  panStep(dt);
+  if (document.body.classList.contains('banded') && (bgTick = (bgTick + 1) % 4) === 0) bg.drawImage(view, 0, 0, backdrop.width, backdrop.height);
   updateProgress();
 }
+let bgTick = 0;
 
 function goTo(i) {
   // Ignore requests until the current transition has finished.
@@ -216,7 +245,27 @@ stage.addEventListener('pointermove', (e) => {
   } else tip.hidden = true;
 });
 stage.addEventListener('pointerleave', () => { tip.hidden = true; });
+stage.addEventListener('pointerdown', (e) => {
+  if (!layout.slack) return;
+  drag = { id: e.pointerId, x: e.clientX, pan: state.pan, moved: false };
+});
+stage.addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.x;
+  if (!drag.moved && Math.abs(dx) < 8) return;                                   // a tap, not a drag (yet)
+  drag.moved = true;
+  state.pan = drag.pan - dx / layout.w;
+  fit();
+});
+const endDrag = (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (drag.moved) { draggedAt = performance.now(); suppressClick = true; setTimeout(() => { suppressClick = false; }, 50); }
+  drag = null;
+};
+stage.addEventListener('pointerup', endDrag);
+stage.addEventListener('pointercancel', endDrag);
 stage.addEventListener('click', (e) => {
+  if (suppressClick) return;                                                      // that was a drag
   document.querySelectorAll('.pop').forEach((p) => p.setAttribute('aria-hidden', 'true'));
   const h = hit(e);
   if (h) return SCENES[state.idx].click(h.id, api);
@@ -580,12 +629,17 @@ async function render() {
       <div class="prose">${html}</div>`;
     document.title = `${post.title} · ciehanski.com`;
   } else if (section === 'help') {
-    const keys = [
+    const touch = matchMedia('(pointer: coarse)').matches;
+    const gestures = [
+      ['Tap', 'the scenery to start the music (and send a heart)'], ['Drag', 'sideways to look around the scene'],
+      ['Scene chip', 'pick a scene'], ['Tour', 'rotate scenes by themselves'], ['Weather', 'live → clear → rain → snow'],
+    ];
+    const keys = touch ? gestures : [
       ['Space', 'play / pause music'], ['N / B', 'next / previous track'], ['← →', 'previous / next scene'], ['S', 'scene picker'], ['T', 'tour (auto-rotate)'],
       ['W', 'weather: live → clear → rain → snow'], ['M', 'mute ambience'], ['P', 'playlist'], ['F', 'fullscreen'],
       ['1 2 3', 'about, projects, blog'], ['Esc', 'close'],
     ];
-    body.innerHTML = `<div class="prose"><p>Everything in the scene is drawn in code, one pixel at a time. <strong>Click around</strong>, some things have something to say.</p></div>
+    body.innerHTML = `<div class="prose"><p>Everything in the scene is drawn in code, one pixel at a time. <strong>${touch ? 'Tap' : 'Click'} around</strong>, some things have something to say.</p></div>
       <table class="keys">${keys.map(([k, v]) => `<tr><td><kbd>${k}</kbd></td><td>${v}</td></tr>`).join('')}</table>
       <p class="prose small">The weather is live from Chicago. The ambience is synthesized in your browser, no audio files.</p>`;
   }
@@ -665,6 +719,7 @@ $('btn-full').addEventListener('click', toggleFull);
 const pipVideo = document.createElement('video');
 pipVideo.muted = true; pipVideo.playsInline = true;
 let pipTimer = null;
+if (!document.fullscreenEnabled) $('btn-full').hidden = true;                 // e.g. iPhone Safari: no element fullscreen
 const canPip = document.pictureInPictureEnabled && typeof view.captureStream === 'function';
 if (!canPip) $('btn-pip').hidden = true;
 $('btn-pip').addEventListener('click', async () => {

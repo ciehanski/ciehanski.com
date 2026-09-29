@@ -22,7 +22,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%; height: 100dvh; overscroll-behavior: none; }
 body {
   margin: 0;
   background: var(--night);
@@ -39,7 +39,14 @@ i[data-icon] { display: inline-flex; line-height: 0; }
 
 /* ---------------------------------------------------------------- stage */
 
-#stage { position: fixed; inset: 0; overflow: hidden; background: var(--night); }
+#stage {
+  position: fixed; inset: 0; overflow: hidden; background: var(--night);
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; /* drag to pan, no zoom or callouts */
+}
+/* Phones held upright: the scene sits in a band over a soft, blurred copy of itself. */
+#backdrop { position: absolute; inset: -8%; width: 116%; height: 116%; display: none; filter: blur(22px) saturate(1.2) brightness(0.55); }
+body.banded #backdrop { display: block; }
+button, a, input, .chip { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 #scene { position: absolute; image-rendering: pixelated; image-rendering: crisp-edges; }
 .fx {
   position: absolute; inset: 0; pointer-events: none;
@@ -59,7 +66,7 @@ i[data-icon] { display: inline-flex; line-height: 0; }
 
 /* ---------------------------------------------------------------- HUD */
 
-.hud { position: fixed; top: 12px; left: 16px; z-index: 5; pointer-events: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); }
+.hud { position: fixed; top: max(12px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left)); z-index: 5; pointer-events: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); }
 .brand {
   pointer-events: auto; text-decoration: none; font-size: 11px; letter-spacing: 0.32em;
   text-transform: uppercase; color: var(--muted);
@@ -78,7 +85,7 @@ i[data-icon] { display: inline-flex; line-height: 0; }
 @keyframes pulse { 50% { opacity: 0.35; } }
 .dot-live { background: #ff6f91; box-shadow: 0 0 8px #ff6f91; }
 
-.nav { position: fixed; top: 12px; right: 16px; z-index: 5; display: flex; gap: 6px; }
+.nav { position: fixed; top: max(12px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); z-index: 5; display: flex; gap: 6px; }
 .nav a {
   display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; text-decoration: none;
   font: 15px var(--pixel); background: var(--glass); border: 1px solid var(--line); border-radius: 10px;
@@ -312,6 +319,29 @@ kbd {
 }
 @media (max-width: 420px) {
   .chip-scene .chip-time, #btn-scenes { display: none; }
+  .vol input { width: 56px; }
+  .place { font-size: 26px; }
+}
+/* Touch screens: finger-sized targets, no sticky hover colours, a press state instead. */
+@media (pointer: coarse) {
+  .btn { width: 42px; height: 42px; }
+  .chip { height: 36px; }
+  .nav a { min-height: 40px; min-width: 40px; justify-content: center; }
+  .x { width: 40px; height: 40px; }
+  .tracklist button { padding: 12px 10px; }
+  .vol input { height: 32px; }
+}
+@media (pointer: coarse) and (max-width: 420px) {
+  .btn { width: 40px; height: 40px; }
+  .dock { gap: 0; }
+}
+@media (hover: none) {
+  .btn:hover, .x:hover, .tracklist button:hover, .thumb:hover { background: none; color: inherit; }
+  .btn-play:hover { background: var(--gold); color: var(--gold-ink); }
+  .chip:hover, .nav a:hover { background: var(--glass); }
+  .btn:active, .x:active, .tracklist button:active, .thumb:active { background: var(--glass-hi); }
+  .chip:active, .nav a:active { background: rgba(40, 34, 70, 0.85); }
+  .btn-play:active { background: #ffbd55; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
