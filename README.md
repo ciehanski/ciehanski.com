@@ -3,7 +3,7 @@
 Six Chicago scenes that crossfade every minute: the desk (with Amber), the lakefront, Armitage on the Brown Line, Fullerton beach, the Lincoln Park Conservatory, and Olive Park. The sky follows the real sun over Chicago (night, dawn, day, golden hour, dusk), the moon shows its real phase, and clouds, rain and snow come from live Chicago weather. Everything is drawn in code on a 480×270 canvas. It's fully static: plain HTML, CSS and ES modules, with nothing to compile.
 
 ```
-pixel/
+ciehanski.com/
   build.mjs          zero-dependency build: markdown → HTML, feed, sitemap, post pages
   content/           ← you edit these
     site.json        name, URL, GitHub, links, music autoplay
@@ -11,7 +11,7 @@ pixel/
     about.md         the About window
     projects.json    the Projects window
     posts/*.md       blog posts
-  site/              ← upload this folder (it IS the website)
+  (everything else)  ← the website itself; GitHub Pages serves the repo root
     index.html, not_found.html (404), robots.txt, favicon.svg
     css/style.css
     js/main.js       engine: scene rotation, HUD, dock, windows, routing
@@ -53,7 +53,7 @@ Markdown here: headings, **bold**, _italic_, `code`, fenced code, lists, > quote
 
 The slug comes from the filename (minus the date). Each post gets a real URL at `/blog/<slug>/` that opens the scene with the post already showing, plus an RSS entry in `/feed.xml`.
 
-Run `node build.mjs` before every upload. The generated files (`site/data/`, `site/blog/`, `feed.xml`, `sitemap.xml`, `404.html`) are meant to be uploaded.
+Run `node build.mjs` before every upload. The generated files (`data/`, `blog/`, `feed.xml`, `sitemap.xml`, `404.html`) are meant to be uploaded.
 
 ## Music
 
@@ -70,7 +70,7 @@ Run `node build.mjs` before every upload. The generated files (`site/data/`, `si
 
 ### Your own tracks
 
-Drop audio files (mp3, m4a, ogg, opus, wav, flac) into `site/music/` and run `node build.mjs`. Names come from the filename, so `03 - Some Artist - Rainy Night.mp3` becomes "Rainy Night" by Some Artist. The player shuffles by default, and there's a tracklist in the playlist panel (P).
+Drop audio files (mp3, m4a, ogg, opus, wav, flac) into `music/` and run `node build.mjs`. Names come from the filename, so `03 - Some Artist - Rainy Night.mp3` becomes "Rainy Night" by Some Artist. The player shuffles by default, and there's a tracklist in the playlist panel (P).
 
 To add credits (required for CC-BY music), fix names, set the order, or use tracks hosted elsewhere, list them in `content/music.json`:
 
@@ -86,7 +86,7 @@ Royalty-free lofi sources: Pixabay Music (no attribution needed) and Free Music 
 
 ## Train sounds
 
-The L is synthesized: rumble, wheel clacks, brake squeal, motor whine, the two-tone door chime, and a spoken "Doors closing." using the browser's voice. To use real recordings you have rights to (Freesound.org has CC-licensed CTA recordings), add any of these to `site/sfx/` and rebuild. Each one replaces its synthesized version:
+The L is synthesized: rumble, wheel clacks, brake squeal, motor whine, the two-tone door chime, and a spoken "Doors closing." using the browser's voice. To use real recordings you have rights to (Freesound.org has CC-licensed CTA recordings), add any of these to `sfx/` and rebuild. Each one replaces its synthesized version:
 
 `train-pass.mp3` · `train-arrive.mp3` · `train-depart.mp3` · `doors-closing.mp3`
 
@@ -108,16 +108,16 @@ The pill next to the weather shows how many people are on the site right now, an
 
 ## Deploying
 
-**Neocities:** upload the *contents* of `site/` to your site root, either by drag-and-drop in the dashboard or with the CLI (`gem install neocities`, then `neocities push site`). Neocities serves `not_found.html` as the 404 page automatically. A custom domain (ciehanski.com) needs the Supporter plan, and as far as I know the free plan also blocks audio uploads (check their allowed file types). If you stay on the free plan, host the music elsewhere and list it by `url` in `music.json`.
+**Neocities:** upload the *contents* of `` to your site root, either by drag-and-drop in the dashboard or with the CLI (`gem install neocities`, then `neocities push .` from the repo root). Neocities serves `not_found.html` as the 404 page automatically. A custom domain (ciehanski.com) needs the Supporter plan, and as far as I know the free plan also blocks audio uploads (check their allowed file types). If you stay on the free plan, host the music elsewhere and list it by `url` in `music.json`.
 
-**GitHub Pages:** publish `pixel/site` with a Pages workflow (upload-pages-artifact → deploy-pages). The build also writes `404.html` for Pages.
+**GitHub Pages:** Settings → Pages → Deploy from a branch → `main` → `/ (root)`. The built files are committed, so run `node build.mjs` before each commit. `.nojekyll` stops GitHub running Jekyll (which would drop `.well-known/`), `CNAME` holds the custom domain, and the build also writes `404.html` for Pages.
 
 ## Tweaking
 
 - **Scene timing:** `SCENE_SECONDS` and `FADE_SECONDS` at the top of `js/main.js`.
 - **Amber's lines, easter eggs:** the `click()` function at the bottom of each scene file. Clickable regions are the `hotspots` arrays, in 480×270 scene pixels.
 - **Deep links / previews:** `/?scene=lincoln&weather=rain&time=18:45&clouds=80`
-  - `scene`: `desk`, `lakefront`, `lincoln`, `fullerton`, `conservatory`, `olive`
+  - `scene`: `desk`, `lakefront`, `lincoln`, `fullerton`, `msi`, `olive`
   - `weather`: `live` (default, every visit), `clear`, `rain`, `snow`
   - `time`: any Chicago local time (HH:MM), to preview sunrise, noon or sunset
   - `clouds`: 0–100 cloud cover

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // Zero-dependency site builder.
 //
-//   node build.mjs          build content/ into site/
-//   node build.mjs --serve  build, then serve site/ on http://localhost:8080 (rebuilds on content changes)
+//   node build.mjs          build content/ into the site (the repo root)
+//   node build.mjs --serve  build, then serve the site on http://localhost:8080 (rebuilds on content changes)
 //
 // Reads:  content/site.json, content/about.md, content/projects.json, content/posts/*.md
-// Also scans site/music/ (+ optional content/music.json) for the player.
-// Writes: site/data/content.json, site/data/posts/<slug>.html, site/blog/<slug>/index.html,
-//         site/feed.xml, site/sitemap.xml, site/404.html
+// Also scans music/ (+ optional content/music.json) for the player.
+// Writes: data/content.json, data/posts/<slug>.html, blog/<slug>/index.html,
+//         feed.xml, sitemap.xml, 404.html
 
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, rmSync, existsSync, statSync, watch } from 'node:fs';
 import { join, dirname, extname, resolve, sep } from 'node:path';
@@ -16,7 +16,7 @@ import { createServer } from 'node:http';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const CONTENT = join(ROOT, 'content');
-const SITE = join(ROOT, 'site');
+const SITE = ROOT; // the repo root is the website (GitHub Pages serves main / root)
 
 // ------------------------------------------------------------------ markdown
 
@@ -148,7 +148,7 @@ function frontmatter(src) {
 
 const readJson = (p, d) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : d);
 
-// Music: every audio file in site/music/ becomes a track. "Artist - Title.mp3"
+// Music: every audio file in music/ becomes a track. "Artist - Title.mp3"
 // (optionally with a leading track number) fills in the names. content/music.json
 // can override titles/artists, add credits, set the order, or point at files
 // hosted elsewhere with "url".
@@ -173,7 +173,7 @@ function musicTracks() {
   const used = new Set();
   for (const m of meta) {
     if (m.url) { out.push(track(m)); continue; }
-    if (!files.includes(m.file)) { console.warn(`music.json: ${m.file} not found in site/music/, skipping`); continue; }
+    if (!files.includes(m.file)) { console.warn(`music.json: ${m.file} not found in music/, skipping`); continue; }
     used.add(m.file);
     out.push(track(m, m.file));
   }
@@ -295,7 +295,7 @@ const MIME = {
 function serve(port = +(process.env.PORT || 8080)) {
   createServer((req, res) => {
     const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    // Resolve, then make sure we're still inside site/ (a file named "I.G.Y..mp3" is fine; "../" is not).
+    // Resolve, then make sure we're still inside the site (a file named "I.G.Y..mp3" is fine; "../" is not).
     let file = resolve(SITE, '.' + path);
     if (file !== SITE && !file.startsWith(SITE + sep)) { res.writeHead(400).end(); return; }
     if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
@@ -318,7 +318,7 @@ function serve(port = +(process.env.PORT || 8080)) {
     }
     res.writeHead(200, { 'content-type': type, 'accept-ranges': 'bytes', 'content-length': body.length, 'cache-control': 'no-store' });
     res.end(body);
-  }).listen(port, () => console.log(`serving site/ on http://localhost:${port}`));
+  }).listen(port, () => console.log(`serving the site on http://localhost:${port}`));
 
   let timer;
   const rebuild = () => {
