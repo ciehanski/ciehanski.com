@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ciehanski.com</title>
+  <meta name="description" content="Late nights in Chicago. Code, projects, and a playlist.">
+  <meta name="theme-color" content="#0b0c22">
+  <link rel="canonical" href="https://www.ciehanski.com/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" title="ciehanski.com" href="/feed.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <!--PAGE_META-->
+  <script type="module" src="/js/main.js"></script>
+</head>
+<body>
+  <div id="stage" aria-hidden="true">
+    <canvas id="scene" width="480" height="270"></canvas>
+    <div class="fx"></div>
+  </div>
+  <div id="tip" class="tip" hidden></div>
+
+  <header class="hud">
+    <a class="brand" href="#/">ciehanski.com</a>
+    <h1 class="place">Chicago</h1>
+    <p class="sub"><span id="scene-name">My Desk</span> · <span id="scene-blurb">Coding and such</span> · <span id="clock" class="clock">--:--</span> <span class="muted" id="phase">local time</span></p>
+    <div class="pills">
+      <p class="pill" id="weather-pill" hidden><span class="dot"></span><span id="weather-text"></span></p>
+      <p class="pill" id="presence-pill" hidden><span class="dot dot-live"></span><span id="presence-text"></span></p>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Site">
+    <a href="#/about" data-route="/about"><i data-icon="user"></i>About</a>
+    <a href="#/projects" data-route="/projects"><i data-icon="code"></i>Projects</a>
+    <a href="#/blog" data-route="/blog"><i data-icon="book"></i>Blog</a>
+    <a id="gh-link" class="icon-only" href="https://github.com/ciehanski" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><i data-icon="github"></i></a>
+  </nav>
+
+  <div class="bottom">
+    <div class="chips">
+      <button class="chip chip-scene" id="chip-scene" title="Pick a scene (S)"><i data-icon="city"></i><span id="chip-scene-name">My Desk</span><span class="chip-time" id="chip-clock">--:--</span></button>
+      <button class="chip" id="chip-tour" title="Rotate scenes (T)"><i data-icon="loop"></i>Tour <span class="chip-state" id="tour-state">on</span></button>
+      <button class="chip" id="chip-weather" title="Weather (W)"><i data-icon="cloud" id="weather-icon"></i>Weather <span class="chip-state" id="weather-state">live</span></button>
+    </div>
+
+    <div class="dock" role="toolbar" aria-label="Player">
+      <button class="btn btn-play" id="btn-play" title="Play / pause music (Space)" aria-label="Play music"><i data-icon="play"></i></button>
+      <button class="btn" id="btn-next" title="Next track (N)" aria-label="Next track"><i data-icon="next"></i></button>
+      <button class="btn" id="btn-list" title="Playlist (P)" aria-label="Show playlist"><i data-icon="list"></i></button>
+      <button class="btn" id="btn-scenes" title="Scenes (S)" aria-label="Scenes"><i data-icon="grid"></i></button>
+      <div class="now">
+        <div class="now-title" id="now-title">ciehanski radio</div>
+        <div class="now-sub" id="now-sub">press play</div>
+        <div class="now-bar" id="now-bar" title="Seek"><span id="now-progress"></span></div>
+      </div>
+      <label class="vol vol-music" title="Music volume">
+        <i data-icon="note"></i>
+        <input type="range" id="vol-music" min="0" max="100" value="60" aria-label="Music volume">
+      </label>
+      <label class="vol" title="Ambience: rain, trains, keyboard (M)">
+        <i data-icon="rain" id="amb-icon"></i>
+        <input type="range" id="amb" min="0" max="100" value="0" aria-label="Ambience volume">
+      </label>
+      <button class="btn" id="btn-pip" title="Mini-player (float the scene)" aria-label="Mini-player"><i data-icon="pip"></i></button>
+      <button class="btn" id="btn-full" title="Fullscreen (F)" aria-label="Fullscreen"><i data-icon="full"></i></button>
+      <button class="btn" id="btn-help" title="Controls (?)" aria-label="Controls"><i data-icon="help"></i></button>
+    </div>
+  </div>
+
+  <div class="pop pop-music" id="pop-music" aria-hidden="true">
+    <div class="pop-head">
+      <span>Playlist</span>
+      <span class="pop-actions">
+        <button class="mini" id="btn-shuffle" aria-pressed="false" title="Shuffle"><i data-icon="shuffle"></i>Shuffle</button>
+        <button class="x" data-close="music" aria-label="Close">×</button>
+      </span>
+    </div>
+    <ol class="tracklist" id="tracklist"></ol>
+    <p class="pop-note" id="music-credits"></p>
+  </div>
+
+  <div class="pop pop-scenes" id="pop-scenes" aria-hidden="true">
+    <div class="pop-head"><span>Scenes</span><button class="x" data-close="scenes" aria-label="Close">×</button></div>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+
+  <div class="say" id="say" hidden>
+    <div class="say-name" id="say-name"></div>
+    <p id="say-text"></p>
+    <span class="say-next">▼</span>
+  </div>
+
+  <div class="win-wrap" id="win-wrap" hidden>
+    <article class="win" id="win" role="dialog" aria-modal="false" aria-labelledby="win-title">
+      <header class="win-bar">
+        <i data-icon="user" id="win-icon"></i>
+        <h2 id="win-title">About</h2>
+        <button class="win-back" id="win-back" hidden>← all posts</button>
+        <button class="x" id="win-close" aria-label="Close">×</button>
+      </header>
+      <div class="win-body" id="win-body"></div>
+    </article>
+  </div>
+
+  <!--PAGE_BODY-->
+  <noscript><p class="noscript">This site is a little pixel-art Chicago that needs JavaScript. The <a href="/feed.xml">blog feed</a> works without it.</p></noscript>
+</body>
+</html>

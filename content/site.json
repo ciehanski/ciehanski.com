@@ -1,0 +1,23 @@
+{
+  "title": "ciehanski.com",
+  "author": "Ryan Ciehanski",
+  "url": "https://www.ciehanski.com",
+  "description": "Late nights in Chicago. Code, projects, and a playlist.",
+  "github": "https://github.com/ciehanski",
+  "autoplay": true,
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ciehanski"
+    },
+    {
+      "label": "Email",
+      "url": "mailto:ryan@ciehanski.com"
+    }
+  ],
+  "musicNote": "Lofi for late nights.",
+  "presence": {
+    "supabaseUrl": "https://onjqujohpoyyoqhswpgy.supabase.co",
+    "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uanF1am9ocG95eW9xaHN3cGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NjE3NTAsImV4cCI6MjEwNjIzNzc1MH0.XTVo2X4BXdCiZfi4fCMAj042O3pAsNH2uvCFiLMFtNg"
+  }
+}

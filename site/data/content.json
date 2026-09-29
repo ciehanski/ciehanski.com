@@ -1,0 +1,100 @@
+{
+  "site": {
+    "title": "ciehanski.com",
+    "author": "Ryan Ciehanski",
+    "url": "https://ciehanski.com",
+    "description": "Late nights in Chicago. Code, projects, and a playlist.",
+    "github": "https://github.com/ciehanski",
+    "autoplay": true,
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/ciehanski"
+      },
+      {
+        "label": "Email",
+        "url": "mailto:ryan@ciehanski.com"
+      }
+    ],
+    "musicNote": "Lofi for late nights.",
+    "presence": {
+      "supabaseUrl": "https://onjqujohpoyyoqhswpgy.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uanF1am9ocG95eW9xaHN3cGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NjE3NTAsImV4cCI6MjEwNjIzNzc1MH0.XTVo2X4BXdCiZfi4fCMAj042O3pAsNH2uvCFiLMFtNg"
+    }
+  },
+  "about": "<h1 id=\"hey-i-m-ryan\">Hey, I'm Ryan.</h1>\n<p>I write software in Chicago, mostly late at night, usually with a playlist on and an orange tabby named <strong>Amber</strong> asleep next to the keyboard.</p>\n<p>I like building small, sharp tools: privacy things that run over Tor, encrypted backups in Rust, Neovim plugins, and the occasional website that's more fun than it needs to be. This one included.</p>\n<h2 id=\"what-s-here\">What's here</h2>\n<ul><li><strong>Projects</strong>: things I've built or am building.</li><li><strong>Blog</strong>: notes on whatever I'm working on or thinking about.</li><li><strong>The scenes</strong>: my desk, Armitage on the Brown Line, and the lakefront. Click around, some things talk back.</li></ul>\n<h2 id=\"say-hi\">Say hi</h2>\n<p>The easiest way to reach me is by email: <a href=\"mailto:ryan@ciehanski.com\">ryan@ciehanski.com</a>. I'm also on <a href=\"https://github.com/ciehanski\" target=\"_blank\" rel=\"noopener\">GitHub</a>.</p>",
+  "projects": [
+    {
+      "name": "libgen-cli",
+      "description": "A CLI tool to access the Library Genesis dataset, written in Go.",
+      "url": "https://github.com/ciehanski/libgen-cli",
+      "repo": "ciehanski/libgen-cli",
+      "stars": 318,
+      "tags": [
+        "Go",
+        "CLI"
+      ]
+    },
+    {
+      "name": "onionbox",
+      "description": "Send and receive files securely through Tor.",
+      "url": "https://github.com/ciehanski/onionbox",
+      "repo": "ciehanski/onionbox",
+      "stars": 42,
+      "tags": [
+        "Go",
+        "Tor",
+        "privacy"
+      ]
+    },
+    {
+      "name": "kip",
+      "description": "A simple encrypted backups tool written in Rust.",
+      "url": "https://github.com/ciehanski/kip",
+      "repo": "ciehanski/kip",
+      "stars": 0,
+      "tags": [
+        "Rust",
+        "encryption",
+        "CLI"
+      ]
+    },
+    {
+      "name": "nvim-git-line",
+      "description": "A Neovim plugin that opens the current line of your buffer on GitHub (or GitLab) in your browser.",
+      "url": "https://github.com/ciehanski/nvim-git-line",
+      "repo": "ciehanski/nvim-git-line",
+      "stars": 2,
+      "tags": [
+        "Lua",
+        "Neovim"
+      ]
+    },
+    {
+      "name": "pigeon",
+      "description": "WebSocket instant messaging over Tor hidden services.",
+      "url": "https://github.com/ciehanski/pigeon",
+      "repo": "ciehanski/pigeon",
+      "stars": 3,
+      "tags": [
+        "Go",
+        "Tor",
+        "WebSockets"
+      ]
+    },
+    {
+      "name": "oniongen-hs",
+      "description": "A v3 onion vanity URL generator written in Haskell.",
+      "url": "https://github.com/ciehanski/oniongen-hs",
+      "repo": "ciehanski/oniongen-hs",
+      "stars": 2,
+      "tags": [
+        "Haskell",
+        "Tor"
+      ]
+    }
+  ],
+  "music": [],
+  "sfx": {},
+  "posts": []
+}

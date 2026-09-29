@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Not in service · ciehanski.com</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --night: #0b0c22; --paper: #f7eedb; --ink: #34261f; --edge: #2a1d18; --gold: #f2a93b; --muted: #a39cc4; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { background: var(--night); color: #ece6ff; font: 14px/1.6 'IBM Plex Mono', ui-monospace, monospace; overflow: hidden; }
+    canvas { position: fixed; image-rendering: pixelated; }
+    .fx { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(4,2,14,.6) 100%), repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 1px, transparent 1px 3px); }
+    main { position: fixed; left: 50%; top: 9vh; transform: translateX(-50%); width: min(520px, calc(100vw - 32px)); text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,.7); }
+    h1 { margin: 0; font: 600 clamp(64px, 14vw, 120px)/1 'Pixelify Sans', monospace; color: var(--gold); letter-spacing: .04em; }
+    h2 { margin: 6px 0 10px; font: 600 clamp(20px, 4vw, 28px) 'Pixelify Sans', monospace; }
+    p { margin: 0 0 20px; color: #cfc8ea; }
+    a.btn {
+      display: inline-block; padding: 8px 18px; margin: 4px; text-decoration: none; text-shadow: none;
+      font: 17px 'Pixelify Sans', monospace; background: var(--paper); color: var(--ink);
+      box-shadow: 0 -3px 0 0 var(--edge), 0 3px 0 0 var(--edge), -3px 0 0 0 var(--edge), 3px 0 0 0 var(--edge), 5px 7px 0 0 rgba(0,0,0,.35);
+    }
+    a.btn:hover { background: var(--gold); }
+    a.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 6px; }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="480" height="270" aria-hidden="true"></canvas>
+  <div class="fx"></div>
+  <main>
+    <h1>404</h1>
+    <h2>This stop isn't in service.</h2>
+    <p>Whatever you were looking for has left the station. The next train back to the city is right here, though.</p>
+    <a class="btn" href="/">← Back to the city</a>
+    <a class="btn" href="/#/blog">Read the blog</a>
+  </main>
+  <script type="module">
+    import { W, H, canvas, rng, rect, dot, hline, vline, gradient, glow, text, textWidth } from '/js/px.js';
+    import { drawSkyline, animateSkyline } from '/js/skyline.js';
+
+    const view = document.getElementById('c');
+    const g = view.getContext('2d');
+    const r = rng(404);
+    const DECK = 204;
+
+    const bg = canvas();
+    gradient(bg.g, 0, 0, W, DECK + 1, ['#06071c', '#101238', '#221c4c', '#472a5e', '#7a4064']);
+    const city = canvas();
+    const sky = drawSkyline(city.g, {
+      baseY: 196, scale: 0.62, seed: 404,
+      landmarks: [{ type: 'trump', x: 120 }, { type: 'willis', x: 250 }, { type: 'wacker', x: 290 }, { type: 'hancock', x: 380 }],
+    });
+    const stars = Array.from({ length: 120 }, () => ({ x: r() * W, y: r() * 120, p: r() * 6, b: r() }));
+
+    const fg = canvas();
+    const f = fg.g;
+    const steel = '#2e3d3a', hi = '#46605a', lo = '#1c2624';
+    rect(f, 0, DECK, W, H - DECK, '#0c0c1c');
+    rect(f, 0, DECK, W, 5, '#4a4a60'); hline(f, 0, DECK, W, '#6a6a84');
+    for (let x = 0; x < W; x += 3) dot(f, x, DECK + 1, x % 6 ? '#e8c23a' : '#4a4a60');
+    rect(f, 0, DECK + 5, W, 3, steel); hline(f, 0, DECK + 7, W, lo);
+    for (let x = 0; x < W; x += 8) for (let k = 0; k < 8; k++) { dot(f, x + k, DECK + 8 + k, steel); dot(f, x + 8 - k, DECK + 8 + k, steel); }
+    rect(f, 0, DECK + 16, W, 3, steel); hline(f, 0, DECK + 16, W, hi);
+    for (const cx of [60, 200, 340, 470]) { rect(f, cx - 3, DECK + 19, 6, H, steel); vline(f, cx - 3, DECK + 19, H, hi); }
+    // canopy + posts
+    rect(f, 40, 112, 400, 5, '#3a2a2e'); hline(f, 40, 112, 400, '#5a4448'); hline(f, 40, 117, 400, '#1a1216');
+    for (const px of [52, 148, 244, 340, 428]) { rect(f, px, 117, 3, DECK - 117, '#2a2224'); vline(f, px, 117, DECK - 117, '#3a3034'); }
+    // station sign
+    const label = 'NOT IN SERVICE';
+    const sw = textWidth(label) + 14;
+    rect(f, 240 - sw / 2, 126, sw, 13, '#15151c'); hline(f, 240 - sw / 2, 126, sw, '#3a3a4a');
+    vline(f, 240 - sw / 2 + 6, 117, 9, '#2a2224'); vline(f, 240 + sw / 2 - 7, 117, 9, '#2a2224');
+    text(f, label, 240 - textWidth(label) / 2, 130, '#e8e8f0');
+    rect(f, 240 - sw / 2 + 2, 129, 3, 3, '#e0283a');
+    // arrival board frame
+    rect(f, 330, 150, 86, 16, '#1a1a22'); rect(f, 332, 152, 82, 12, '#07070a');
+    vline(f, 356, 117, 33, '#2a2224'); vline(f, 390, 117, 33, '#2a2224');
+    // bench
+    rect(f, 86, 188, 48, 3, '#6b4c3a'); hline(f, 86, 188, 48, '#8b6a56');
+    rect(f, 86, 180, 48, 2, '#6b4c3a');
+    for (const bx of [90, 128]) rect(f, bx, 180, 2, DECK - 180, '#2a2224');
+    // lamps
+    const lamps = [100, 196, 292, 388];
+    for (const lx of lamps) { rect(f, lx - 4, 117, 9, 2, '#ffe8b0'); }
+
+    const board = canvas(82, 12);
+    const msg = '  404  PAGE NOT FOUND  -  NEXT TRAIN: NEVER  -  ';
+    const pigeon = { x: 180, dir: 1 };
+
+    function fit() {
+      const s = Math.max(innerWidth / W, innerHeight / H);
+      Object.assign(view.style, { width: W * s + 'px', height: H * s + 'px', left: (innerWidth - W * s) / 2 + 'px', top: (innerHeight - H * s) / 2 + 'px' });
+    }
+    addEventListener('resize', fit);
+    fit();
+
+    let t = 0, last = performance.now();
+    function frame(now) {
+      requestAnimationFrame(frame);
+      const dt = Math.min(0.1, (now - last) / 1000);
+      if (dt < 1 / 30) return;
+      last = now; t += dt;
+      g.drawImage(bg.c, 0, 0);
+      for (const s of stars) {
+        const tw = 0.5 + 0.5 * Math.sin(t * (0.8 + s.b) + s.p);
+        if (tw > 0.3) dot(g, s.x, s.y, tw > 0.75 ? '#ffffff' : '#6d6ea8');
+      }
+      g.drawImage(city.c, 0, 0);
+      animateSkyline(g, sky, t, { glowScale: 0.7 });
+      // a train that already left: taillights shrinking into the distance
+      const away = (t % 12) / 12;
+      if (away < 0.7) {
+        const x = 440 + away * 60;
+        dot(g, x, DECK - 6, '#ff3030'); glow(g, x, DECK - 6, 8 * (1 - away), '#ff2020', 0.6 * (1 - away));
+      }
+      g.drawImage(fg.c, 0, 0);
+      for (const lx of lamps) glow(g, lx, 124, 42, '#ffcf80', 0.28 + 0.03 * Math.sin(t * 2 + lx));
+      if (Math.sin(t * 13) > 0.97) rect(g, 196 - 4, 117, 9, 2, '#6a5a40'); // one lamp flickers
+
+      // scrolling LED board
+      const b = board.g;
+      rect(b, 0, 0, 82, 12, '#07070a');
+      const off = Math.floor(t * 18) % (textWidth(msg) + 4);
+      text(b, msg + msg, 2 - off, 4, '#ff9a2a');
+      g.drawImage(board.c, 332, 152);
+      glow(g, 373, 158, 30, '#ff8a20', 0.12);
+
+      // pigeon pacing the platform
+      pigeon.x += pigeon.dir * dt * 9;
+      if (pigeon.x > 300 || pigeon.x < 150) pigeon.dir *= -1;
+      const px = Math.round(pigeon.x), bob = Math.floor(t * 6) % 2;
+      const d = pigeon.dir;
+      rect(g, px - 3, DECK - 5, 6, 3, '#7a7f95');
+      rect(g, px + (d > 0 ? 2 : -4), DECK - 7 + bob, 2, 2, '#8a8fa8');
+      dot(g, px + (d > 0 ? 4 : -5), DECK - 6 + bob, '#e8a040');
+      dot(g, px + (d > 0 ? 3 : -4), DECK - 7 + bob, '#111');
+      dot(g, px - 1, DECK - 2, '#e8a040'); dot(g, px + 1, DECK - 2, '#e8a040');
+      rect(g, px + (d > 0 ? -5 : 3), DECK - 5, 2, 2, '#5a5f75');
+    }
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

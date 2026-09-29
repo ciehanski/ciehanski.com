@@ -1,0 +1,50 @@
+[
+  {
+    "name": "libgen-cli",
+    "description": "A CLI tool to access the Library Genesis dataset, written in Go.",
+    "url": "https://github.com/ciehanski/libgen-cli",
+    "repo": "ciehanski/libgen-cli",
+    "stars": 318,
+    "tags": ["Go", "CLI"]
+  },
+  {
+    "name": "onionbox",
+    "description": "Send and receive files securely through Tor.",
+    "url": "https://github.com/ciehanski/onionbox",
+    "repo": "ciehanski/onionbox",
+    "stars": 42,
+    "tags": ["Go", "Tor", "privacy"]
+  },
+  {
+    "name": "kip",
+    "description": "A simple encrypted backups tool written in Rust.",
+    "url": "https://github.com/ciehanski/kip",
+    "repo": "ciehanski/kip",
+    "stars": 0,
+    "tags": ["Rust", "encryption", "CLI"]
+  },
+  {
+    "name": "nvim-git-line",
+    "description": "A Neovim plugin that opens the current line of your buffer on GitHub (or GitLab) in your browser.",
+    "url": "https://github.com/ciehanski/nvim-git-line",
+    "repo": "ciehanski/nvim-git-line",
+    "stars": 2,
+    "tags": ["Lua", "Neovim"]
+  },
+  {
+    "name": "pigeon",
+    "description": "WebSocket instant messaging over Tor hidden services.",
+    "url": "https://github.com/ciehanski/pigeon",
+    "repo": "ciehanski/pigeon",
+    "stars": 3,
+    "tags": ["Go", "Tor", "WebSockets"]
+  },
+  {
+    "name": "oniongen-hs",
+    "description": "A v3 onion vanity URL generator written in Haskell.",
+    "url": "https://github.com/ciehanski/oniongen-hs",
+    "repo": "ciehanski/oniongen-hs",
+    "stars": 2,
+    "tags": ["Haskell", "Tor"]
+  }
+]
