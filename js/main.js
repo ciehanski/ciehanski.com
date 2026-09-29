@@ -48,11 +48,12 @@ const state = {
   fadeT: 0,
   focus: 0.5,
   pan: 0,
-  // the slow side-to-side drift: on by default on phones and tablets, off elsewhere
-  drift: store.get('drift', matchMedia('(pointer: coarse)').matches),
+  // the slow side-to-side drift: on by default on phones and tablets (unless the device asks for reduced
+  // motion), off elsewhere; the Drift chip always wins
+  drift: store.get('drift', matchMedia('(pointer: coarse)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches),
   panHome: false,
   sceneT: 0,
-  tour: store.get('tour', !reducedMotion),
+  tour: store.get('tour', true),                                                   // scenes rotate by default everywhere (slow crossfades)
   weatherMode: params.get('weather') || 'live', // always start on real Chicago weather
   live: null,
   content: null,
@@ -128,7 +129,7 @@ function panStep(dt) {
   if (state.panHome) {
     state.pan += (0 - state.pan) * Math.min(1, dt * 0.8);
     if (Math.abs(state.pan) < 0.0005) { state.pan = 0; state.panHome = false; }
-  } else if (state.drift && !reducedMotion && performance.now() - draggedAt > 9000) {
+  } else if (state.drift && performance.now() - draggedAt > 9000) {
     const target = layout.slack * 0.9 * Math.sin(state.t * (2 * Math.PI / 90));
     state.pan += (target - state.pan) * Math.min(1, dt * 0.35);
   }
@@ -919,13 +920,6 @@ loadContent().then((c) => {
 
 // warm the other scenes in idle time so crossfades don't hitch
 (window.requestIdleCallback || setTimeout)(() => SCENES.forEach((s) => s.build()));
-
-if (!store.get('hinted', false)) {
-  setTimeout(() => {
-    if ($('win-wrap').hidden && $('say').hidden) say('', 'Psst. Try clicking things in the scene.');
-    store.set('hinted', true);
-  }, 6000);
-}
 
 // handy for debugging from the console
 window.__px = { state, goTo, SCENES, amb };
