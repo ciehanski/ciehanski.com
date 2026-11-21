@@ -840,7 +840,7 @@ function toggleFull() {
 }
 
 const ambInput = $('amb');
-// Ambience (rain, city hum, trains, keyboard) starts low so the music leads; the slider or M changes it.
+// Ambience (city hum, waves, rain, keyboard) starts low so the music leads; the slider or M changes it.
 // (A fresh storage key, so visitors who had the old default of 35 get the new, quieter one too.)
 ambInput.value = store.get('ambience2', 12);
 let lastVol = +ambInput.value || 12;
@@ -850,7 +850,7 @@ function setAmb(v) {
   amb.setVolume(v / 100);
   applyMix(SCENES[state.next ?? state.idx]);
   store.set('ambience2', +v);
-  setIcon($('amb-icon'), +v ? 'rain' : 'mute');
+  setIcon($('amb-icon'), +v ? 'wave' : 'mute');
   ambInput.style.setProperty('--fill', v + '%');
 }
 ambInput.addEventListener('input', () => setAmb(+ambInput.value));
