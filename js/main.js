@@ -288,9 +288,20 @@ function movePinch() {
   if (state.zoom < 1.02) { state.zoom = 1; state.panY = 0; }                      // snap back to the normal view
   fit();
 }
-stage.addEventListener('gesturestart', (e) => e.preventDefault());              // iOS: don't zoom the whole page
+// iOS Safari zooms the whole page (controls and all) on a pinch unless told not
+// to, and once it has, the scenery blocks the pinch that would undo it. So block
+// page zoom everywhere except inside a text window (About, posts...), where people
+// may want to enlarge the text. If the page got zoomed anyway, let Safari pinch it
+// back out instead of zooming the scene.
+const pageZoomed = () => (window.visualViewport?.scale ?? 1) > 1.01;
+const blockPageZoom = (e) => { if (!pageZoomed() && !e.target?.closest?.('.win-wrap')) e.preventDefault(); };
+for (const ev of ['gesturestart', 'gesturechange']) document.addEventListener(ev, blockPageZoom, { passive: false });
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1) blockPageZoom(e); }, { passive: false });
+// While the page is zoomed, hand touches on the scenery back to Safari so it can pinch out and pan.
+window.visualViewport?.addEventListener('resize', () => { stage.style.touchAction = pageZoomed() ? 'manipulation' : ''; });
 stage.addEventListener('pointerdown', (e) => {
   if (e.pointerType === 'touch') {
+    if (pageZoomed()) return;                                                      // Safari is handling this one (see above)
     touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (touches.size === 2) return startPinch();
     if (touches.size > 2) return;
