@@ -102,6 +102,8 @@ let layout = { scale: 1, left: 0, top: 0 };
 // (about 60% of the scene's width) over a soft, blurred copy of itself.
 const PORTRAIT_SHOW = 0.6;
 const MAX_ZOOM = 2;                                                                // how far a pinch can zoom in
+// a phone (not a tablet): touch-first and small. Tablets and desktops keep the desktop behaviour.
+const IS_PHONE = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
 const backdrop = $('backdrop'), bg = backdrop.getContext('2d');
 function baseScale() {
   const cover = Math.max(innerWidth / W, innerHeight / H);
@@ -701,6 +703,7 @@ async function render() {
     const touch = matchMedia('(pointer: coarse)').matches;
     const gestures = [
       ['Tap', 'the scenery to start the music (and send a heart)'], ['Drag', 'sideways to look around the scene'],
+      ['Pinch', 'zoom in on the scenery'], ...(IS_PHONE ? [['Tap empty scenery', 'bring the controls back after they tuck away']] : []),
       ['Scene chip', 'pick a scene'], ['Tour', 'rotate scenes by themselves'], ['Drift', 'slowly pan across the scene'], ['Weather', 'live → clear → rain → snow'],
     ];
     const keys = touch ? gestures : [
@@ -769,12 +772,12 @@ $('btn-shuffle').addEventListener('click', () => {
   store.set('shuffle', music.state.shuffle);
 });
 const musicInput = $('vol-music');
-// A fresh storage key, so visitors who had the old default of 60 get the new, quieter one too.
-musicInput.value = store.get('musicVolume2', 35);
+// A fresh storage key, so visitors who were stored at an earlier default get the current one.
+musicInput.value = store.get('musicVolume3', 50);
 function setMusicVol(v) {
   musicInput.value = v;
   music?.setVolume((v / 100) ** 2);
-  store.set('musicVolume2', +v);
+  store.set('musicVolume3', +v);
   musicInput.style.setProperty('--fill', v + '%');
 }
 musicInput.addEventListener('input', () => setMusicVol(+musicInput.value));
@@ -915,7 +918,31 @@ function wake() {
     else { document.body.classList.add('idle'); tip.hidden = true; hideUiTip(); }
   }, IDLE_MS);
 }
-for (const ev of ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart']) addEventListener(ev, wake, { passive: true });
+// On phones, once everything has tucked away, scrolling and pinching the scenery
+// leave it tucked away so you can just look around, and tapping something in the
+// scene (the cat, a window...) just does its thing. A tap on empty scenery brings
+// the controls back. Desktops and tablets wake on any activity.
+function onActivity(e) {
+  if (IS_PHONE && document.body.classList.contains('idle') && e.target?.closest?.('#stage')) return;
+  wake();
+}
+for (const ev of ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart']) addEventListener(ev, onActivity, { passive: true });
+if (IS_PHONE) {
+  let down = null;
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch') return;
+    down = down ? { spoiled: true } : { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now() };   // a second finger: a pinch, not a tap
+  });
+  stage.addEventListener('pointerup', (e) => {
+    if (!down) return;
+    const d = down;
+    if (touches.size === 0) down = null;
+    if (d.spoiled || e.pointerId !== d.id || !document.body.classList.contains('idle')) return;
+    const isTap = performance.now() - d.t < 400 && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 12;
+    if (isTap && !hit(e)) wake();
+  });
+  stage.addEventListener('pointercancel', () => { down = null; });
+}
 wake();
 
 // ------------------------------------------------------------------ boot
