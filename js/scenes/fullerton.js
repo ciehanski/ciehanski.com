@@ -334,6 +334,7 @@ export default {
       if (v > 0.6) hrect(g, edgeX(y) - 1 - (v > 1.2 ? 0.5 : 0), y, 1 + (v > 1.2 ? 0.5 : 0), 0.5, v > 1.2 ? '#c8d4ff' : '#7a86b8');
     }
     glow(g, L.lamp.x, L.lamp.y - 36, 26, '#ffcf80', (0.35 + 0.02 * Math.sin(t * 2)) * night);
+    drawLights(g, L.lampLights ??= spiral(L.lamp.x + 0.25, 154, 185, { radius: 1.6, pitch: 2.6, seed: 9 }), t, env, { glow: 2.5 });   // the lamp post, wrapped for the holidays
 
     const snowing = env.weather === 'snow';
     L.snowCover += ((snowing ? 1 : 0) - L.snowCover) * Math.min(1, dt * (snowing ? 0.25 : 0.6));

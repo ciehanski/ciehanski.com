@@ -32,6 +32,12 @@ export class Ambience {
     this.master = ctx.createGain();
     this.master.gain.value = this.volume ** 1.5;
     this.master.connect(ctx.destination);
+    // Scene sound effects (trains, the bus, the door chime) get their own output: the
+    // ambience slider still sets them (0 silences them), but on a gentler curve, so a
+    // passing train is clearly audible even with the background turned down low.
+    this.sfxOut = ctx.createGain();
+    this.sfxOut.gain.value = this.#sfxLevel();
+    this.sfxOut.connect(ctx.destination);
     this.buffers = { white: noiseBuffer(ctx, 'white'), brown: noiseBuffer(ctx, 'brown'), pink: noiseBuffer(ctx, 'pink') };
 
     const loop = (buf, ...nodes) => {
@@ -89,7 +95,7 @@ export class Ambience {
   // Scene sound effects (trains, bus, chime, purr) all go through a per-scene
   // bus, so a scene change can fade out whatever is still playing.
   #sceneBus() {
-    if (!this.sfxBus) { this.sfxBus = this.ctx.createGain(); this.sfxBus.connect(this.master); }
+    if (!this.sfxBus) { this.sfxBus = this.ctx.createGain(); this.sfxBus.connect(this.sfxOut); }
     return this.sfxBus;
   }
 
@@ -156,9 +162,14 @@ export class Ambience {
     src.start(t, Math.random() * 3, len + 0.02);
   }
 
+  #sfxLevel() { return this.volume > 0.005 ? 0.3 + 0.7 * this.volume ** 1.5 : 0; }
+
   setVolume(v) {
     this.volume = v;
-    if (this.ctx) this.master.gain.setTargetAtTime(v ** 1.5, this.ctx.currentTime, 0.2);
+    if (this.ctx) {
+      this.master.gain.setTargetAtTime(v ** 1.5, this.ctx.currentTime, 0.2);
+      this.sfxOut.gain.setTargetAtTime(this.#sfxLevel(), this.ctx.currentTime, 0.2);
+    }
   }
 
   setMix(mix) {
@@ -298,7 +309,7 @@ export class Ambience {
         const voices = speechSynthesis.getVoices().filter((v) => /^en[-_]US/i.test(v.lang));
         u.voice = voices.find((v) => /male|david|guy|fred|alex|daniel/i.test(v.name) && !/female/i.test(v.name)) || voices[0] || null;
         u.rate = 0.95; u.pitch = 0.85;
-        u.volume = Math.min(1, this.volume * 1.4);
+        u.volume = Math.min(1, this.#sfxLevel() * 1.4);
         speechSynthesis.speak(u);
       }, 1400);
     }

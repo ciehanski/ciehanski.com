@@ -18,8 +18,8 @@ const LAMPS = [110, 334, 440];
 // Trains: every 30s one comes through. Most stop at Armitage (brake, doors,
 // chime, pull out); the rest roll straight through.
 const CYCLE = 30;
-const PASS = 8;                 // seconds to cross when not stopping
-const ARRIVE = 5, DWELL = 9, DEPART = 5;
+const PASS = 4.5;               // seconds to cross when not stopping (faster than the cars on Armitage)
+const ARRIVE = 4, DWELL = 9, DEPART = 4.5;
 const DOORS = [2, 7.6];         // open/close times within the dwell
 const DOOR_OFFSETS = [18, 42];  // door x within each 64px car
 
@@ -127,6 +127,34 @@ function building(g, r, out, { x, w, top, color, cols, rows, winW = 6, winH = 9,
 }
 
 // ------------------------------------------------------------------ train
+
+// Holiday season (while the lights are up): the CTA Holiday Train look. Green
+// garland with red bows along every roofline, and each car outlined in
+// multicoloured bulbs. Drawn in the train's own coordinates (facing right),
+// so it flips with the train.
+function buildHolidayTrain() {
+  const cars = 4, carW = 62, gap = 2;
+  const { c, g } = canvasHi(cars * (carW + gap), 22);
+  const r = rng(1224);
+  const greens = ['#1e4a26', '#2c6634', '#3e8444', '#56a052'];
+  const lights = [];
+  for (let i = 0; i < cars; i++) {
+    const cx = i * (carW + gap);
+    for (let x = cx; x < cx + carW; x += 0.5) {                                  // garland, draped a little between hooks
+      const sag = 0.6 * Math.abs(Math.sin(((x - cx) / 10) * Math.PI));
+      hrect(g, x, 2 + sag, 0.5, 1, r.pick(greens));
+      if (r() < 0.35) hdot(g, x, 3 + sag, r.pick(greens));
+    }
+    for (const bx of [cx + 1, cx + 11, cx + 21, cx + 31, cx + 41, cx + 51, cx + 60]) { // red bows at the hooks
+      hrect(g, bx - 1, 1.5, 2.5, 1, '#d42a2a'); hdot(g, bx, 2, '#ff6a5a');
+      hrect(g, bx - 0.5, 2.5, 0.5, 1.5, '#a01a1a'); hrect(g, bx + 1, 2.5, 0.5, 1.5, '#a01a1a');
+    }
+    for (let x = cx + 1; x < cx + carW; x += 2.5) lights.push(bulb(r, x, 3.2, MULTI), bulb(r, x + 1.2, 17.8, MULTI));   // roof and skirt
+    for (let y = 5; y < 16; y += 2.5) lights.push(bulb(r, cx + 0.8, y, MULTI), bulb(r, cx + carW - 0.8, y, MULTI));  // car ends
+  }
+  return { decor: c, lights };
+}
+
 
 function buildTrain() {
   const cars = 4, carW = 62, gap = 2;
@@ -619,7 +647,6 @@ export default {
   name: 'Armitage',
   blurb: 'Brown Line, Lincoln Park',
   ambience: { city: 0.6, rain: 1 },
-  silent: true, // sound is off in this scene for now; delete this line to bring back the L, the bus and the street
 
   hotspots: [
     { id: 'tavern', x: 0, y: 168, w: 86, h: 36, label: 'Tavern' },
@@ -693,6 +720,14 @@ export default {
       if (tr.dir < 0) { g.translate(x + tw, 0); g.scale(-1, 1); blit(g, L.train, 0, RAIL - 21); }
       else blit(g, L.train, x, RAIL - 21);
       g.restore();
+      if (env.sky.lights) {                                                       // the holiday train
+        L.holiday ??= buildHolidayTrain();
+        g.save();
+        if (tr.dir < 0) { g.translate(x + tw, RAIL - 21); g.scale(-1, 1); } else g.translate(x, RAIL - 21);
+        blit(g, L.holiday.decor);
+        drawLights(g, L.holiday.lights, t, env, { glow: 2.5 });
+        g.restore();
+      }
       for (let k = 0; k < 4; k++) glow(g, x + 31 + k * 64, RAIL - 12, 34, '#ffe0a0', 0.14 * (0.3 + 0.7 * night));
       if (tr.doors > 0) {
         for (let car = 0; car < 4; car++)
