@@ -8,12 +8,15 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   audio.volume = volume;
   const el = audio;
   let vol = volume;
-  // iPhones ignore <audio>.volume (it always reads back 1). There, route the
-  // audio through a Web Audio gain node so the volume slider still works.
-  const volumeWorks = (() => { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; })();
+  // iPhones and iPads ignore <audio>.volume, so there the audio goes through a
+  // Web Audio gain node instead. (Detected by device: newer iOS reads the set
+  // value back even though it has no effect.)
+  const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // Web Audio on iOS is silenced by the mute switch unless the page asks for media playback.
+  if (isIOS && 'audioSession' in navigator) { try { navigator.audioSession.type = 'playback'; } catch { /* older iOS */ } }
   let ctx = null, gain = null;
   function ensureGain() {
-    if (volumeWorks) return;
+    if (!isIOS) return;
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
@@ -22,7 +25,12 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
       gain.gain.value = vol;
       ctx.createMediaElementSource(audio).connect(gain).connect(ctx.destination);
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
+  }
+  // iOS only lets audio start inside a tap, and suspends it when the page is
+  // backgrounded; resume on the next tap so the music is never silently "playing".
+  if (isIOS) for (const ev of ['touchend', 'pointerup', 'keydown']) {
+    addEventListener(ev, () => { if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); }, { passive: true });
   }
 
   const state = {

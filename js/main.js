@@ -47,6 +47,8 @@ const state = {
   fadeT: 0,
   focus: 0.5,
   pan: 0,
+  zoom: 1,                                                                         // pinch-to-zoom on touch screens (1 = normal view)
+  panY: 0,                                                                         // vertical pan, only while zoomed in
   // the slow side-to-side drift: on by default on phones and tablets (unless the device asks for reduced
   // motion), off elsewhere; the Drift chip always wins
   drift: store.get('drift', matchMedia('(pointer: coarse)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches),
@@ -99,20 +101,29 @@ let layout = { scale: 1, left: 0, top: 0 };
 // a quarter of the scene, so instead it shows a wide band across the middle
 // (about 60% of the scene's width) over a soft, blurred copy of itself.
 const PORTRAIT_SHOW = 0.6;
+const MAX_ZOOM = 2;                                                                // how far a pinch can zoom in
 const backdrop = $('backdrop'), bg = backdrop.getContext('2d');
-function fit(focus = state.focus) {
-  state.focus = focus;
+function baseScale() {
   const cover = Math.max(innerWidth / W, innerHeight / H);
   const tall = innerHeight > innerWidth * 1.15;
-  const scale = tall ? Math.min(cover, innerWidth / (W * PORTRAIT_SHOW)) : cover;
+  return tall ? Math.min(cover, innerWidth / (W * PORTRAIT_SHOW)) : cover;
+}
+function fit(focus = state.focus) {
+  state.focus = focus;
+  const scale = baseScale() * state.zoom;
   const w = W * scale, h = H * scale;
   const slack = Math.max(0, (w - innerWidth) / 2 / w);                             // how far the view can pan, in focus units
   state.pan = Math.max(-slack, Math.min(slack, state.pan));
+  // up/down panning only while zoomed in, so the normal view is unchanged
+  const slackY = state.zoom > 1 ? Math.max(0, (h - innerHeight) / 2 / h) : 0;
+  state.panY = Math.max(-slackY, Math.min(slackY, state.panY));
   const left = Math.round(Math.min(0, Math.max(innerWidth - w, innerWidth / 2 - (focus + state.pan) * w)));
-  const top = Math.round(h < innerHeight ? (innerHeight - h) * 0.46 : (innerHeight - h) / 2);
+  const top = Math.round(h < innerHeight ? (innerHeight - h) * 0.46
+    : slackY ? Math.min(0, Math.max(innerHeight - h, innerHeight / 2 - (0.5 + state.panY) * h))
+    : (innerHeight - h) / 2);
   if (left !== layout.left || top !== layout.top || scale !== layout.scale)
     Object.assign(view.style, { width: w + 'px', height: h + 'px', left: left + 'px', top: top + 'px' });
-  layout = { scale, left, top, slack, w };
+  layout = { scale, left, top, slack, slackY, w, h };
   document.body.classList.toggle('banded', h < innerHeight - 2);
   $('chip-drift').hidden = !slack;                                                 // nothing to pan when the whole width fits
 }
@@ -124,7 +135,7 @@ addEventListener('resize', () => fit());
 let drag = null, draggedAt = -1e9, suppressClick = false;
 function panStep(dt) {
   if (!layout.slack) return;
-  if (drag) return fit();
+  if (drag || pinch || state.zoom > 1) return fit();                               // zoomed in: the view stays where you put it
   if (state.panHome) {
     state.pan += (0 - state.pan) * Math.min(1, dt * 0.8);
     if (Math.abs(state.pan) < 0.0005) { state.pan = 0; state.panHome = false; }
@@ -174,7 +185,7 @@ function step(now) {
   state.t += dt;
   state.sceneT += dt;
 
-  if (state.tour && state.next == null && state.sceneT > SCENE_SECONDS) goTo((state.idx + 1) % SCENES.length);
+  if (state.tour && state.next == null && state.zoom === 1 && state.sceneT > SCENE_SECONDS) goTo((state.idx + 1) % SCENES.length);
 
   if (!state.sky || state.t - state.skyAt > 5) { state.sky = sky(); state.skyAt = state.t; }
   const cur = SCENES[state.idx];
@@ -213,6 +224,7 @@ function goTo(i) {
   state.next = i;
   state.fadeT = 0;
   state.sceneT = 0;
+  state.zoom = 1; state.panY = 0;                                                  // a new scene starts at the normal view
   store.set('scene', SCENES[i].id);
   showSceneInfo(SCENES[i]);
   applyMix(SCENES[i]);
@@ -254,19 +266,56 @@ stage.addEventListener('pointermove', (e) => {
   } else tip.hidden = true;
 });
 stage.addEventListener('pointerleave', () => { tip.hidden = true; });
+// Pinch to zoom (touch screens only; mouse and trackpad are unchanged). The
+// spot between your fingers stays under your fingers, so pinching also pans.
+const touches = new Map();
+let pinch = null;
+const midpoint = () => { const [a, b] = [...touches.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 }; };
+function startPinch() {
+  const m = midpoint();
+  drag = null;
+  // the point of the scene under the fingers, as a fraction of the scene's width and height
+  pinch = { d: m.d, zoom: state.zoom, sx: (m.x - layout.left) / layout.w, sy: (m.y - layout.top) / layout.h };
+}
+function movePinch() {
+  const m = midpoint();
+  state.zoom = Math.max(1, Math.min(MAX_ZOOM, pinch.zoom * m.d / pinch.d));
+  const s = baseScale() * state.zoom, w = W * s, h = H * s;
+  state.pan = (innerWidth / 2 - m.x) / w + pinch.sx - state.focus;
+  state.panY = (innerHeight / 2 - m.y) / h + pinch.sy - 0.5;
+  if (state.zoom < 1.02) { state.zoom = 1; state.panY = 0; }                      // snap back to the normal view
+  fit();
+}
+stage.addEventListener('gesturestart', (e) => e.preventDefault());              // iOS: don't zoom the whole page
 stage.addEventListener('pointerdown', (e) => {
-  if (!layout.slack) return;
-  drag = { id: e.pointerId, x: e.clientX, pan: state.pan, moved: false };
+  if (e.pointerType === 'touch') {
+    touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touches.size === 2) return startPinch();
+    if (touches.size > 2) return;
+  }
+  if (!layout.slack && !layout.slackY) return;
+  drag = { id: e.pointerId, x: e.clientX, y: e.clientY, pan: state.pan, panY: state.panY, moved: false };
 });
 stage.addEventListener('pointermove', (e) => {
+  if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pinch && touches.size >= 2) return movePinch();
   if (!drag || e.pointerId !== drag.id) return;
-  const dx = e.clientX - drag.x;
-  if (!drag.moved && Math.abs(dx) < 8) return;                                   // a tap, not a drag (yet)
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved && Math.hypot(dx, dy) < 8) return;                             // a tap, not a drag (yet)
   drag.moved = true;
   state.pan = drag.pan - dx / layout.w;
+  if (layout.slackY) state.panY = drag.panY - dy / layout.h;
   fit();
 });
 const endDrag = (e) => {
+  touches.delete(e.pointerId);
+  if (pinch) {
+    if (touches.size < 2) {                                                        // pinch over; don't count it as a tap
+      pinch = null;
+      draggedAt = performance.now(); suppressClick = true; setTimeout(() => { suppressClick = false; }, 300);
+    }
+    return;
+  }
   if (!drag || e.pointerId !== drag.id) return;
   if (drag.moved) { draggedAt = performance.now(); suppressClick = true; setTimeout(() => { suppressClick = false; }, 50); }
   drag = null;
