@@ -58,31 +58,42 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   }
   if (resume && !(resume.index >= 0 && resume.index < tracks.length)) resume = null;
   makeOrder(resume ? resume.index : tracks.length ? (shuffle ? Math.floor(Math.random() * tracks.length) : 0) : null);
-  // Start buffering the first song (or the one a refresh resumes) as soon as the
-  // page loads, so pressing play doesn't wait on the download.
   // A fresh visit starts the first song a few seconds in (a refresh still picks
   // up exactly where it was).
   const FIRST_SONG_START = 5;                                                     // seconds
   if (!resume && tracks.length) resume = { index: order[0], position: FIRST_SONG_START };
+
+  // Starting partway into a song, three ways, because browsers differ: a media
+  // fragment (#t=5) in the URL, which Safari honours; a seek once the file's
+  // details have loaded; and, as a last resort, a seek the moment it starts
+  // playing if it still began from the top.
+  let pendingStart = 0;
+  const srcFor = (i, at) => (at > 0 ? `${tracks[i].src}#t=${Math.round(at * 100) / 100}` : tracks[i].src);
+  function seekTo(at) {
+    if (audio.readyState >= 1) { if (Math.abs(audio.currentTime - at) > 0.5) audio.currentTime = at; }
+    else audio.addEventListener('loadedmetadata', () => { if (Math.abs(audio.currentTime - at) > 0.5) audio.currentTime = at; }, { once: true });
+  }
+
+  // Start buffering the first song (or the one a refresh resumes) as soon as the
+  // page loads, so pressing play doesn't wait on the download.
   let preloaded = null;
   if (tracks.length) {
-    preloaded = tracks[order[0]].src;
+    const at = resume?.index === order[0] ? resume.position : 0;
+    preloaded = srcFor(order[0], at);
     audio.src = preloaded;
-    const at = resume?.position || 0;
-    if (at > 0) audio.addEventListener('loadedmetadata', () => { if (preloaded) audio.currentTime = at; }, { once: true });   // buffer from there
+    if (at > 0) seekTo(at);
   }
 
   function load(i, autoplay) {
     if (!tracks.length) return;
     state.index = i;
     state.error = null;
-    if (tracks[i].src !== preloaded) audio.src = tracks[i].src;                  // already buffering? keep it
+    const at = resume?.index === i && resume.position > 0 ? resume.position : 0;
+    const src = srcFor(i, at);
+    if (src !== preloaded) audio.src = src;                                         // already buffering? keep it
     preloaded = null;
-    if (resume?.index === i && resume.position > 0) {
-      const at = resume.position;
-      if (audio.readyState >= 1) audio.currentTime = at;                         // metadata already loaded by the preload
-      else audio.addEventListener('loadedmetadata', () => { audio.currentTime = at; }, { once: true });
-    }
+    pendingStart = at;
+    if (at > 0) seekTo(at);
     resume = null;
     if (autoplay) play();
     mediaSession();
@@ -106,7 +117,11 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   }
 
   const handlers = {
-    playing: () => { state.paused = false; state.loading = false; state.blocked = false; failures = 0; emit(); },
+    playing: () => {
+      if (pendingStart > 0 && audio.currentTime < pendingStart - 1) audio.currentTime = pendingStart;   // it ignored the earlier seeks
+      pendingStart = 0;
+      state.paused = false; state.loading = false; state.blocked = false; failures = 0; emit();
+    },
     pause: () => { state.paused = true; emit(); },
     ended: () => { state.paused = false; next(true); },
   };
