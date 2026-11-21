@@ -63,10 +63,10 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   const FIRST_SONG_START = 5;                                                     // seconds
   if (!resume && tracks.length) resume = { index: order[0], position: FIRST_SONG_START };
 
-  // Starting partway into a song, three ways, because browsers differ: a media
-  // fragment (#t=5) in the URL, which Safari honours; a seek once the file's
-  // details have loaded; and, as a last resort, a seek the moment it starts
-  // playing if it still began from the top.
+  // Starting partway into a song, several ways, because browsers differ: a media
+  // fragment (#t=5) in the URL; a seek once the file's details have loaded; and,
+  // for Safari, which can quietly drop a seek made before playback really starts,
+  // a check once it's playing that keeps nudging it there until it sticks.
   let pendingStart = 0;
   const srcFor = (i, at) => (at > 0 ? `${tracks[i].src}#t=${Math.round(at * 100) / 100}` : tracks[i].src);
   function seekTo(at) {
@@ -107,6 +107,7 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
     state.loading = true;
     emit();
     const p = el.play();
+    if (p) p.then(enforceStart, () => {}).catch(() => {});
     if (p) p.catch((err) => {
       state.loading = false;
       // NotAllowedError = autoplay blocked until the visitor interacts; anything else is a bad file.
@@ -118,14 +119,20 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
 
   const handlers = {
     playing: () => {
-      if (pendingStart > 0 && audio.currentTime < pendingStart - 1) audio.currentTime = pendingStart;   // it ignored the earlier seeks
-      pendingStart = 0;
+      enforceStart();
       state.paused = false; state.loading = false; state.blocked = false; failures = 0; emit();
     },
     pause: () => { state.paused = true; emit(); },
     ended: () => { state.paused = false; next(true); },
   };
   for (const [ev, fn] of Object.entries(handlers)) audio.addEventListener(ev, fn);
+  // Seek to the start point if playback began before it; once it's there, stop checking.
+  function enforceStart() {
+    if (pendingStart <= 0 || audio.paused) return;
+    if (audio.currentTime < pendingStart - 1) audio.currentTime = pendingStart;
+    else pendingStart = 0;
+  }
+  audio.addEventListener('timeupdate', enforceStart);
   audio.addEventListener('waiting', () => { state.loading = true; emit(); });
   audio.addEventListener('canplay', () => { state.loading = false; emit(); });
   audio.addEventListener('loadedmetadata', emit);
@@ -174,7 +181,7 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
     next: () => next(),
     prev,
     playIndex(i) { makeOrder(i); load(i, true); },
-    seek(frac) { if (state.duration) audio.currentTime = frac * state.duration; },
+    seek(frac) { if (state.duration) { pendingStart = 0; audio.currentTime = frac * state.duration; } },
     setVolume(v) { vol = v; audio.volume = v; if (gain) gain.gain.value = v; },
     setShuffle(on) { state.shuffle = on; makeOrder(state.index >= 0 ? state.index : null); emit(); },
   };

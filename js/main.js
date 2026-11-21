@@ -790,11 +790,11 @@ $('btn-shuffle').addEventListener('click', () => {
 });
 const musicInput = $('vol-music');
 // A fresh storage key, so visitors who were stored at an earlier default get the current one.
-musicInput.value = store.get('musicVolume3', 50);
+musicInput.value = store.get('musicVolume4', 60);
 function setMusicVol(v) {
   musicInput.value = v;
   music?.setVolume((v / 100) ** 2);
-  store.set('musicVolume3', +v);
+  store.set('musicVolume4', +v);
   musicInput.style.setProperty('--fill', v + '%');
 }
 musicInput.addEventListener('input', () => setMusicVol(+musicInput.value));
@@ -854,6 +854,12 @@ function setAmb(v) {
   ambInput.style.setProperty('--fill', v + '%');
 }
 ambInput.addEventListener('input', () => setAmb(+ambInput.value));
+// iOS only lets Web Audio start at the end of a tap (touchend/click), not when a
+// finger first lands, and suspends it again after the phone locks. The ambience is
+// created on page load, so wake it up at the end of any tap, the slider included.
+for (const ev of ['touchend', 'pointerup', 'click', 'change']) {
+  addEventListener(ev, () => { if (amb.ctx && amb.ctx.state !== 'running') amb.ctx.resume().catch(() => {}); }, { capture: true, passive: true });
+}
 
 addEventListener('keydown', (e) => {
   if (e.target.closest('input, textarea') && e.key !== 'Escape') return;
@@ -1015,4 +1021,4 @@ loadContent().then((c) => {
 (window.requestIdleCallback || setTimeout)(() => SCENES.forEach((s) => s.build()));
 
 // handy for debugging from the console
-window.__px = { state, goTo, SCENES, amb };
+window.__px = { state, goTo, SCENES, amb, get music() { return music; } };
