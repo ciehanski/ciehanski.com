@@ -13,7 +13,7 @@ const BASE = 150;                        // shoreline / horizon
 const WHEEL = { x: 128, y: BASE - 12, r: 9 }; // Navy Pier's Centennial Wheel, far down the shore
 const LIGHT_K = 0.7;                           // lighthouse scale
 const LIGHT = { x: 74, y: BASE - 20 * LIGHT_K }; // Chicago Harbor Light's lamp, on the breakwater
-const MOON = { x: 118, y: 40 };
+const MOON = { x: WHEEL.x, y: 40 };              // straight above the wheel, so the moonlight on the water runs down under it
 
 // Revetment edge: x of the lake edge at row y (the concrete is to the right).
 const edgeX = (y) => {
@@ -299,6 +299,11 @@ export default {
           const w = 3 + (y - BASE) * 0.22, wob = Math.sin(y * 0.8 + t * 2) * 2;
           if (Math.sin(y * 1.9 + t * 3.2) > -0.3) hrect(g, sx - w / 2 + wob, y, w, 0.5, warm > 0.3 ? `rgba(255,190,120,${0.42 * sunA})` : `rgba(255,250,230,${0.38 * sunA})`);
         }
+      }
+      // the wheel's coloured lights on the water, right under it
+      if (night > 0.2) for (let y = BASE + 1; y < BASE + 34; y += 1) {
+        const k = (y - BASE) / 34, w = WHEEL.r * 1.4 * (1 - k * 0.5), wob = Math.sin(y * 0.9 + t * 2.2) * 1.5;
+        if (Math.sin(y * 1.5 + t * 2.6) > -0.2) hrect(g, WHEEL.x - w / 2 + wob, y, w, 0.5, `hsla(${(y * 11 + t * 40) % 360},80%,68%,${0.2 * (1 - k) * night})`);
       }
       // the beacon's streak on the water, brightest when it faces us
       if (beamA > 0.05) for (let y = BASE + 1; y < BASE + 60; y += 1) {

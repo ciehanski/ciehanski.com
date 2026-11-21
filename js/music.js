@@ -4,7 +4,7 @@
 
 export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resume = null }) {
   const audio = new Audio();
-  audio.preload = 'none';
+  audio.preload = 'auto';
   audio.volume = volume;
   const el = audio;
   let vol = volume;
@@ -58,13 +58,31 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   }
   if (resume && !(resume.index >= 0 && resume.index < tracks.length)) resume = null;
   makeOrder(resume ? resume.index : tracks.length ? (shuffle ? Math.floor(Math.random() * tracks.length) : 0) : null);
+  // Start buffering the first song (or the one a refresh resumes) as soon as the
+  // page loads, so pressing play doesn't wait on the download.
+  // A fresh visit starts the first song a few seconds in (a refresh still picks
+  // up exactly where it was).
+  const FIRST_SONG_START = 5;                                                     // seconds
+  if (!resume && tracks.length) resume = { index: order[0], position: FIRST_SONG_START };
+  let preloaded = null;
+  if (tracks.length) {
+    preloaded = tracks[order[0]].src;
+    audio.src = preloaded;
+    const at = resume?.position || 0;
+    if (at > 0) audio.addEventListener('loadedmetadata', () => { if (preloaded) audio.currentTime = at; }, { once: true });   // buffer from there
+  }
 
   function load(i, autoplay) {
     if (!tracks.length) return;
     state.index = i;
     state.error = null;
-    audio.src = tracks[i].src;
-    if (resume?.index === i && resume.position > 0) { const at = resume.position; audio.addEventListener('loadedmetadata', () => { audio.currentTime = at; }, { once: true }); }
+    if (tracks[i].src !== preloaded) audio.src = tracks[i].src;                  // already buffering? keep it
+    preloaded = null;
+    if (resume?.index === i && resume.position > 0) {
+      const at = resume.position;
+      if (audio.readyState >= 1) audio.currentTime = at;                         // metadata already loaded by the preload
+      else audio.addEventListener('loadedmetadata', () => { audio.currentTime = at; }, { once: true });
+    }
     resume = null;
     if (autoplay) play();
     mediaSession();
@@ -97,6 +115,7 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   audio.addEventListener('canplay', () => { state.loading = false; emit(); });
   audio.addEventListener('loadedmetadata', emit);
   audio.addEventListener('error', () => {
+    if (state.index < 0) { preloaded = null; return; }                          // the early preload failed: just load it again on play
     state.error = 'Could not load ' + (state.track?.title || 'track');
     state.loading = false;
     emit();
