@@ -152,7 +152,7 @@ const readJson = (p, d) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) 
 // (optionally with a leading track number) fills in the names. content/music.json
 // can override titles/artists, add credits, set the order, or point at files
 // hosted elsewhere with "url".
-const AUDIO = /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac)$/i;
+const AUDIO = /\.(mp3|mp4|m4a|aac|ogg|oga|opus|wav|flac)$/i;
 function musicTracks() {
   const dir = join(SITE, 'music');
   const files = existsSync(dir) ? readdirSync(dir).filter((f) => AUDIO.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })) : [];
@@ -288,7 +288,7 @@ const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.xml': 'application/xml',
   '.txt': 'text/plain; charset=utf-8', '.ico': 'image/x-icon', '.woff2': 'font/woff2',
-  '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.ogg': 'audio/ogg', '.oga': 'audio/ogg',
+  '.mp3': 'audio/mpeg', '.mp4': 'audio/mp4', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.ogg': 'audio/ogg', '.oga': 'audio/ogg',
   '.opus': 'audio/ogg', '.wav': 'audio/wav', '.flac': 'audio/flac',
 };
 

@@ -94,7 +94,38 @@
       ]
     }
   ],
-  "music": [],
+  "music": [
+    {
+      "src": "/music/01%20-%20Brooklyn%20Funk%20Essentials%20-%20Take%20The%20L%20Train%20(To%208%20Ave.).mp4",
+      "title": "Take The L Train (To 8 Ave.)",
+      "artist": "Brooklyn Funk Essentials"
+    },
+    {
+      "src": "/music/02%20-%20Justin%20Hurwitz%20-%20Summer%20Montage%20%26%20Madeline.mp4",
+      "title": "Summer Montage & Madeline",
+      "artist": "Justin Hurwitz"
+    },
+    {
+      "src": "/music/03%20-%20De-Phazz%20-%20Death%20by%20Chocolate.mp4",
+      "title": "Death by Chocolate",
+      "artist": "De-Phazz"
+    },
+    {
+      "src": "/music/04%20-%20The%20Bahama%20Soul%20Club%20-%20Ay%20Jona.mp4",
+      "title": "Ay Jona",
+      "artist": "The Bahama Soul Club"
+    },
+    {
+      "src": "/music/05%20-%20Club%20des%20Belugas%20-%20Coffee%20to%20Go.mp4",
+      "title": "Coffee to Go",
+      "artist": "Club des Belugas"
+    },
+    {
+      "src": "/music/06%20-%20The%20Bahama%20Soul%20Club%20-%20Casino%20De%20Capri.mp4",
+      "title": "Casino De Capri",
+      "artist": "The Bahama Soul Club"
+    }
+  ],
   "sfx": {},
   "posts": []
 }

@@ -57,7 +57,7 @@ Run `node build.mjs` before every upload. The generated files (`data/`, `blog/`,
 
 ## Music
 
-Drop audio files (mp3, m4a, ogg, opus, wav, flac) into `music/` and run `node build.mjs`. Names come from the filename, so `03 - Some Artist - Rainy Night.mp3` becomes "Rainy Night" by Some Artist. The player shuffles by default, and there's a tracklist in the playlist panel (P).
+Drop audio files (mp3, mp4, m4a, ogg, opus, wav, flac) into `music/` and run `node build.mjs`. Names come from the filename, so `03 - Some Artist - Rainy Night.mp3` becomes "Rainy Night" by Some Artist. The player shuffles by default, and there's a tracklist in the playlist panel (P).
 
 To add credits (required for CC-BY music), fix names, set the order, or use tracks hosted elsewhere, list them in `content/music.json`:
 
