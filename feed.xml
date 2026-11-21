@@ -3,7 +3,7 @@
 <channel>
   <title>ciehanski.com</title>
   <link>https://ciehanski.com/</link>
-  <description>Late nights in Chicago. Code, projects, and a playlist.</description>
+  <description>My corner of the internet: coding, projects, writing, and music. All from Chicago.</description>
   <atom:link href="https://ciehanski.com/feed.xml" rel="self" type="application/rss+xml"/>
 
 </channel>
