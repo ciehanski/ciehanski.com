@@ -57,19 +57,6 @@ Run `node build.mjs` before every upload. The generated files (`data/`, `blog/`,
 
 ## Music
 
-**ciehanski radio** plays six composed themes, one written for each scene, Animal Crossing style. They play through in order as finished songs (intro, A, A', B, a solo, a breakdown, a last A that lifts up a key in some themes, and an ending), then move on to the next. The music doesn't change with the scene. The themes live in `SONGS` in `js/lofi.js`: each has a key, tempo, swing, chord changes, a groove, its own instruments (keys, lead, bass, drum kit) and mix, and melody motifs that get stated and answered. Everything is synthesized live in the browser (no audio files).
-
-| Theme | Feel | Instruments |
-|---|---|---|
-| git push --force | half-time jazzhop, dark and dusty | Wurlitzer, analog saw lead, synth bass |
-| lake shore drive | 80s city pop, four on the floor | DX electric piano + guitar cuts, sax, slap bass, gated snare |
-| brown line bounce | swung Animal Crossing town walk | honky-tonk piano, whistle + accordion, upright, brushes |
-| fullerton sun | bossa nova | nylon guitar, steel pan + kalimba, bongos and woodblock |
-| greenhouse morning | gentle and airy | harp arpeggios, flute + ocarina, music box, triangle |
-| olive park sundown | minor-key boom-bap | drawbar organ + Rhodes, muted trumpet, vibes |
-
-### Your own tracks
-
 Drop audio files (mp3, m4a, ogg, opus, wav, flac) into `music/` and run `node build.mjs`. Names come from the filename, so `03 - Some Artist - Rainy Night.mp3` becomes "Rainy Night" by Some Artist. The player shuffles by default, and there's a tracklist in the playlist panel (P).
 
 To add credits (required for CC-BY music), fix names, set the order, or use tracks hosted elsewhere, list them in `content/music.json`:

@@ -2,15 +2,11 @@
 // single <audio> element. Shuffle, next/prev, volume, seeking, and OS media
 // controls (lock screen, media keys) via the Media Session API.
 
-import { SongPlayer } from './lofi.js';
-
 export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resume = null }) {
   const audio = new Audio();
   audio.preload = 'none';
   audio.volume = volume;
-  let vol = volume;
-  let el = audio;          // what's playing now: the <audio> element, or a generative JazzhopTrack
-  let gen = null;
+  const el = audio;
 
   const state = {
     tracks, index: -1, paused: true, shuffle, loading: false, error: null,
@@ -42,20 +38,8 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
     if (!tracks.length) return;
     state.index = i;
     state.error = null;
-    const crossfade = !!gen && !!autoplay;
-    if (gen) { gen.fadeOut(crossfade ? 5 : 1.5); gen = null; }       // the last song fades out as the next comes in
-    if (tracks[i].gen) {
-      audio.pause();
-      gen = new SongPlayer(tracks[i].gen, vol);
-      if (crossfade) gen.fadeIn = 4;
-      if (resume?.index === i) gen.startAt = resume.position;                  // back where we were before the refresh
-      for (const [ev, fn] of Object.entries(handlers)) gen.addEventListener(ev, fn);
-      el = gen;
-    } else {
-      el = audio;
-      audio.src = tracks[i].src;
-      if (resume?.index === i && resume.position > 0) { const at = resume.position; audio.addEventListener('loadedmetadata', () => { audio.currentTime = at; }, { once: true }); }
-    }
+    audio.src = tracks[i].src;
+    if (resume?.index === i && resume.position > 0) { const at = resume.position; audio.addEventListener('loadedmetadata', () => { audio.currentTime = at; }, { once: true }); }
     resume = null;
     if (autoplay) play();
     mediaSession();
@@ -81,14 +65,12 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
     playing: () => { state.paused = false; state.loading = false; state.blocked = false; failures = 0; emit(); },
     pause: () => { state.paused = true; emit(); },
     ended: () => { state.paused = false; next(true); },
-    nearend: () => { state.paused = false; next(true); },          // crossfade into the next song
   };
   for (const [ev, fn] of Object.entries(handlers)) audio.addEventListener(ev, fn);
   audio.addEventListener('waiting', () => { state.loading = true; emit(); });
   audio.addEventListener('canplay', () => { state.loading = false; emit(); });
   audio.addEventListener('loadedmetadata', emit);
   audio.addEventListener('error', () => {
-    if (el !== audio) return;
     state.error = 'Could not load ' + (state.track?.title || 'track');
     state.loading = false;
     emit();
@@ -105,7 +87,7 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   }
 
   function prev() {
-    if (el === audio && audio.currentTime > 4) { audio.currentTime = 0; return; }
+    if (audio.currentTime > 4) { audio.currentTime = 0; return; }
     const pos = order.indexOf(state.index);
     load(order[(pos - 1 + order.length) % order.length], !state.paused);
   }
@@ -132,14 +114,8 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
     next: () => next(),
     prev,
     playIndex(i) { makeOrder(i); load(i, true); },
-    // switch to a track by its scene (theme music follows the scene), keeping play/pause state
-    playScene(id) {
-      const i = tracks.findIndex((t) => t.scene === id);
-      if (i < 0 || i === state.index) return;
-      makeOrder(i); load(i, !state.paused);
-    },
-    seek(frac) { if (state.duration && el === audio) audio.currentTime = frac * state.duration; },
-    setVolume(v) { vol = v; audio.volume = v; if (gen) gen.volume = v; },
+    seek(frac) { if (state.duration) audio.currentTime = frac * state.duration; },
+    setVolume(v) { audio.volume = v; },
     setShuffle(on) { state.shuffle = on; makeOrder(state.index >= 0 ? state.index : null); emit(); },
   };
 }

@@ -11,7 +11,6 @@ import { skyState, phaseLabel, moonName } from './sky.js';
 import { Ambience } from './audio.js';
 import { hydrateIcons, setIcon } from './icons.js';
 import { initMusic } from './music.js';
-import { sceneThemes } from './lofi.js';
 import { startPresence } from './presence.js';
 
 // Tour order alternates city streets and the lakefront, so similar views never run back to back.
@@ -511,7 +510,7 @@ function renderTracklist(tracks) {
   if (!tracks.length) {
     const li = document.createElement('li');
     li.className = 'empty';
-    li.textContent = 'No tracks yet. Drop audio files into site/music/ and run node build.mjs.';
+    li.textContent = 'No tracks yet. Drop audio files into music/ and run node build.mjs.';
     list.append(li);
     return;
   }
@@ -906,8 +905,8 @@ loadContent().then((c) => {
   }).then((p) => { live = p; });
   amb.sampleUrls = c.sfx || {};
   if (amb.ctx) amb.loadSamples();
-  // the six scene themes play through in order (independent of the scene), then any songs of your own
-  const tracks = [...sceneThemes(['conservatory', 'olive', 'lincoln', 'fullerton', 'lakefront']), ...(c.music || [])];
+  // your own tracks from music/ (see build.mjs and content/music.json)
+  const tracks = c.music || [];
   renderTracklist(tracks);
   const was = tracks.findIndex((tr) => tr.title === resume?.track);
   music = initMusic({ tracks, onState: onMusic, volume: (+musicInput.value / 100) ** 2, shuffle: false, resume: was >= 0 ? { index: was, position: +resume.pos || 0 } : null });
