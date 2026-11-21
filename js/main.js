@@ -163,6 +163,12 @@ function weather() {
   return state.weatherMode === 'live' ? state.live?.kind || 'clear' : state.weatherMode;
 }
 
+// Scene sound effects (trains, the bus, the door chime) only play while the site
+// is the thing you're looking at; music and ambience carry on in the background.
+const pageInFront = () => document.visibilityState === 'visible' && document.hasFocus();
+const quietScene = () => { if (!pageInFront()) amb.fadeOutScene(0.8); };      // fade a train mid-pass, cancel "Doors closing."
+document.addEventListener('visibilitychange', quietScene);
+addEventListener('blur', quietScene);
 function sfx(name, o = {}) {
   if (name === 'train') amb.trainPass(o.sec, o.dir);
   else if (name === 'train-arrive') amb.trainArrive(o.sec, o.dir);
@@ -191,7 +197,7 @@ function step(now) {
 
   if (!state.sky || state.t - state.skyAt > 5) { state.sky = sky(); state.skyAt = state.t; }
   const cur = SCENES[state.idx];
-  const env = { weather: weather(), sky: state.sky, sfx: (n, o) => state.next == null && !cur.silent && sfx(n, o) };
+  const env = { weather: weather(), sky: state.sky, sfx: (n, o) => state.next == null && !cur.silent && pageInFront() && sfx(n, o) };
   if (state.next == null) {
     cur.draw(vg, state.t, dt, env);
   } else {

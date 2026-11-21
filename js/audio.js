@@ -293,6 +293,7 @@ export class Ambience {
     if ('speechSynthesis' in window) {
       clearTimeout(this.speechTimer);
       this.speechTimer = setTimeout(() => {
+        if (document.visibilityState !== 'visible') return;                     // a late timer in a background tab: say nothing
         const u = new SpeechSynthesisUtterance('Doors closing.');
         const voices = speechSynthesis.getVoices().filter((v) => /^en[-_]US/i.test(v.lang));
         u.voice = voices.find((v) => /male|david|guy|fred|alex|daniel/i.test(v.name) && !/female/i.test(v.name)) || voices[0] || null;
