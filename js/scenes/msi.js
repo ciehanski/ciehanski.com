@@ -5,6 +5,7 @@
 // whole thing mirrored in the lagoon. Cherry branches frame the top.
 
 import { W, H, canvasHi, blit, hrect, hdot, rng, rect, gradient, glow, mix } from '../px.js';
+import { drawLights, alongBranch, inCrown, spiral, bulb, MULTI, WARM } from '../lights.js';
 import { Precip, snowCaps, isFrozen, iceSheet } from '../weather.js';
 import { Sky, drawLit } from '../sky.js';
 
@@ -427,9 +428,17 @@ export default {
     drawLit(g, L.farNight, L.far, day);
     if (night > 0.3) for (const [x, y, p] of [[102.5, 54, 0], [106.5, 55, 0.5], [133, 53, 1.1]])       // aviation beacons
       if (Math.sin(t * 2.2 + p) > 0.3) hdot(g, x, y, `rgba(255,70,60,${night})`);
+    L.lights ??= {                                                                  // holiday lights: park trees, the terrace cherries, the framing limbs
+      back: [[8, 124, 22], [30, 110, 18], [-6, 146, 20], [44, 138, 12], [446, 128, 20], [468, 112, 22], [488, 140, 18], [182, 132, 10], [298, 134, 10]]
+        .flatMap(([cx, cy, rad], i) => inCrown(cx, cy - 1, rad * 0.8, rad * 0.7, Math.round(rad * 1.6), { seed: 60 + i })),
+      terrace: TERRACE.flatMap((x, i) => inCrown(x + 1, B - 13, 6, 4.5, 9, { seed: 80 + i, palette: MULTI })),
+      frame: FRAME.flatMap(({ pts }, i) => alongBranch(pts, { seed: 100 + i, spacing: 4, maxY: 80 })),
+    };
     drawLit(g, S.backNight, S.back, day);
+    drawLights(g, L.lights.back, t, env, { glow: 2.5 });
     drawLit(g, L.bldNight, L.bld, day);
     drawLit(g, S.frontNight, S.front, day);
+    drawLights(g, L.lights.terrace, t, env, { glow: 2.5 });
 
     // floodlights on the facade at night
     if (night > 0.05) {
@@ -474,6 +483,7 @@ export default {
     drawLit(g, S.barkNight, S.bark, day);
     const sway = Math.round(Math.sin(t * 0.6) * 2) / 2;
     g.save(); g.translate(sway, 0); drawLit(g, S.frameNight, S.frame, day); g.restore();
+    drawLights(g, L.lights.frame, t, env);
 
     const snowing = env.weather === 'snow';
     L.snowCover += ((snowing ? 1 : 0) - L.snowCover) * Math.min(1, dt * (snowing ? 0.25 : 0.6));

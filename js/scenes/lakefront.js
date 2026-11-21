@@ -4,6 +4,7 @@
 import {
   W, H, canvas, canvasHi, blit, hrect, hdot, isHi, rng, rect, dot, hline, vline, gradient, ditherRect, glow, ellipse, bayer, darken, lighten,
 } from '../px.js';
+import { drawLights, alongBranch, inCrown, spiral, bulb, MULTI, WARM } from '../lights.js';
 import { drawSkyline, animateSkyline } from '../skyline.js';
 import { Precip, snowCaps, isFrozen, iceSheet } from '../weather.js';
 import { Sky, dayVariant, drawLit } from '../sky.js';
@@ -317,6 +318,7 @@ export default {
       g.globalAlpha = 1;
     }
     glow(g, LAMP, 183, 34, '#ffcf80', (0.4 + 0.02 * Math.sin(t * 2)) * night);
+    drawLights(g, L.lights ??= spiral(LAMP + 0.5, 188, 232, { radius: 2.2, pitch: 5, seed: 3 }), t, env, { glow: 2.5 });   // the lamp post, wrapped for the holidays
     // thermos steam
     for (let k = 0; k < 5; k++) {
       const life = (t * 0.5 + k / 5) % 1;

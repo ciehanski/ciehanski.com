@@ -5,6 +5,7 @@
 import {
   W, H, canvasHi, blit, hrect, hdot, rng, rect, dot, hline, vline, gradient, glow, ellipse, darken, lighten, mix,
 } from '../px.js';
+import { drawLights, alongBranch, inCrown, spiral, bulb, MULTI, WARM } from '../lights.js';
 import { drawSkyline, animateSkyline } from '../skyline.js';
 import { Precip, snowCaps, isFrozen, iceSheet } from '../weather.js';
 import { Sky, dayVariant, drawLit } from '../sky.js';
@@ -221,6 +222,11 @@ export default {
     L.trees[season] ??= buildTrees(season);
     const trees = L.trees[season];
     drawLit(g, trees.night, trees.day, day);
+    L.lights ??= (() => {                                                         // the park-strip trees, strung with tiny warm lights
+      const r = rng(909);
+      return Array.from({ length: 80 }, () => { const x = 338 + r() * (W - 340), u = (x - 336) / (W - 336); return bulb(r, x, BASE - 1.5 - Math.pow(r(), 0.8) * (3 + u * 11), WARM); });
+    })();
+    drawLights(g, L.lights, t, env, { size: 0.5, glow: 1.5 });
 
     // Navy Pier's Centennial Wheel, far down the shore, turning slowly.
     {

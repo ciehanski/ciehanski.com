@@ -5,6 +5,7 @@ import {
   W, H, canvas, canvasHi, blit, hrect, hdot, isHi, rng, rect, dot, hline, vline, gradient, ditherRect, glow, ellipse,
   text, textWidth, mix, darken, lighten, hash,
 } from '../px.js';
+import { drawLights, alongBranch, inCrown, spiral, bulb, MULTI, WARM } from '../lights.js';
 import { drawSkyline, animateSkyline } from '../skyline.js';
 import { Precip, snowCaps } from '../weather.js';
 import { Sky, dayVariant, drawLit } from '../sky.js';
@@ -724,6 +725,7 @@ export default {
     drawLit(g, trees.night, trees.day, day);
     drawSnow(g, L.snow.st, day, L.snowCover);
     drawSnow(g, trees.snow, day, L.snowCover);
+    drawLights(g, L.lights ??= TREES.flatMap((tx, i) => inCrown(tx, 155, 18, 14, 46, { seed: 40 + i })), t, env, { glow: 2.5 });   // street trees wrapped in warm white
     drawLit(g, L.parked, L.parkedDay, day);
     drawSnow(g, L.parkedSnow, day, L.snowCover);
     for (const lx of LAMPS) glow(g, lx, 142, 30, '#ffcf80', (0.34 + 0.02 * Math.sin(t * 2 + lx)) * night);

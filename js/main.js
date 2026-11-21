@@ -7,6 +7,7 @@ import olive from './scenes/olive.js';
 // import conservatory from './scenes/conservatory.js'; // out of rotation for now
 import msi from './scenes/msi.js';
 import { chicagoWeather, isFrozen } from './weather.js';
+import { lightsOn } from './lights.js';
 import { skyState, phaseLabel, moonName } from './sky.js';
 import { Ambience } from './audio.js';
 import { hydrateIcons, setIcon } from './icons.js';
@@ -156,6 +157,8 @@ function sky() {
     : state.weatherMode === 'clear' ? 0.08 : 0.9;
   const st = skyState(chicagoNow(), { cover, weather: w });
   if (params.get('month')) st.month = (+params.get('month') - 1 + 12) % 12; // preview a season
+  const lp = params.get('lights');                                               // ?lights=on / off to preview
+  st.lights = lp ? !/^(0|off|no|false)$/i.test(lp) : lightsOn(chicagoNow(), params.get('month') ? st.month : null);
   return st;
 }
 

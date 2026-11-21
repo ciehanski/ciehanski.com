@@ -6,6 +6,7 @@ import {
   W, H, canvas, canvasHi, blit, rng, rect, dot, hrect, hdot, hline, vline, gradient, ditherRect, glow, ellipse,
   sprite, text, mix, darken, lighten, hash, bayer, blitHi,
 } from '../px.js';
+import { drawLights, alongBranch, inCrown, spiral, bulb, MULTI, WARM } from '../lights.js';
 import * as px from '../px.js';
 import { drawSkyline, animateSkyline } from '../skyline.js';
 import { Precip, paneDrops, snowCaps } from '../weather.js';
@@ -19,6 +20,7 @@ const KB = { x: 204, y: 180 };  // keyboard
 const MAT = { x: 156, y: 175, w: 168 }; // desk mat, as wide as the monitors
 const MUG = { x: 184, y: 176 }; // on the desk mat, within reach of the keyboard
 const CANDLE = { x: 31, y: 36 };
+const XMAS = { x: 125, y: 145, w: 22, h: 32 }; // the little holiday tree, on the desk between the pencil cup and the figurine
 
 let L;
 
@@ -973,6 +975,65 @@ function drawTree(g, t, env, dt) {
   });
 }
 
+// ------------------------------------------------------------------ the holiday tree
+
+// A little tabletop tree for the holidays (only while the lights are up): a
+// terracotta pot, three tiers of branches, glass baubles, a gold star, and its
+// own string of twinkling lights. Drawn at 2x like the rest of the desk.
+function buildXmas() {
+  const r = rng(1225);
+  const { x: ox, y: oy, w, h } = XMAS, cx = w / 2;
+  const day = canvasHi(w, h);
+  const g = day.g;
+  // pot, with a lit rim and a shaded right side
+  hrect(g, cx - 4, 27, 8, 4.5, '#a8442e'); hrect(g, cx + 1.5, 27.5, 2.5, 4, '#7a2e22');
+  hrect(g, cx - 4.5, 26.5, 9, 1, '#d0683e'); hrect(g, cx - 3.5, 31, 7, 0.5, '#5a2018');
+  hrect(g, cx - 1, 25, 2, 1.5, '#5a3a24');                                           // trunk
+  // three tiers, light on the left, shade on the right, a darker scalloped hem
+  const greens = ['#16361f', '#22502c', '#2f6a38', '#4a8c48', '#68aa58'];
+  for (const [ty, by, hw] of [[2.5, 11, 5], [7.5, 18, 8], [13, 25.5, 10.5]]) {
+    for (let y = ty; y < by; y += 0.5) {
+      const half = 0.6 + hw * (y - ty) / (by - ty);
+      for (let x = cx - half; x < cx + half; x += 0.5) {
+        const u = (x - (cx - half)) / (2 * half);                                    // 0 = left edge, 1 = right
+        let k = u < 0.3 ? 3 : u < 0.7 ? 2 : 1;
+        if (r() < 0.18) k += r() < 0.5 ? 1 : -1;                                     // needle texture
+        if (by - y < 1 && (Math.round(x * 2) % 3 === 0)) k = 0;                     // the hem
+        hrect(g, x, y, 0.5, 0.5, greens[Math.max(0, Math.min(4, k))]);
+      }
+    }
+  }
+  // baubles: a coloured ball with a bright glint
+  const BAUBLES = [[cx - 2, 8.5, '#e23a3a'], [cx + 2.5, 9.5, '#f0c040'], [cx - 4.5, 14.5, '#4a8cff'], [cx + 1, 13.5, '#d8dce8'],
+    [cx + 5, 16, '#e23a3a'], [cx - 1.5, 17, '#b46ae0'], [cx - 7, 21.5, '#f0c040'], [cx - 2.5, 22.5, '#e23a3a'], [cx + 2.5, 21, '#4a8cff'], [cx + 7, 23, '#d8dce8']];
+  for (const [x, y, c] of BAUBLES) {
+    hrect(g, x - 0.5, y - 0.5, 1.5, 1.5, c); hrect(g, x + 0.5, y + 0.5, 0.5, 0.5, darken(c, 0.35));
+    hdot(g, x - 0.5, y - 0.5, lighten(c, 0.6));
+  }
+  // the star
+  hrect(g, cx - 0.5, 0, 1, 3.5, '#f0c030'); hrect(g, cx - 1.5, 1, 3, 1, '#f0c030'); hdot(g, cx - 0.5, 1, '#fff6c0'); hdot(g, cx, 1.5, '#fff6c0');
+  // the night version: dimmer, the way the rest of the room is at night
+  const night = canvasHi(w, h);
+  blit(night.g, day.c);
+  night.g.globalCompositeOperation = 'source-atop';
+  night.g.fillStyle = 'rgba(14,10,34,0.45)';
+  night.g.fillRect(0, 0, w, h);
+  // its own string of lights, swagged across each tier (scene coordinates)
+  const swags = [[[cx - 3, 6], [cx + 3.5, 8.5]], [[cx + 6, 12], [cx - 6.5, 15.5]], [[cx - 9, 19.5], [cx + 9.5, 23.5]]];
+  const lights = swags.flatMap((pts, i) => alongBranch(pts.map(([x, y]) => [ox + x, oy + y]), { seed: 70 + i, spacing: 1.6, wrap: 0.3, palette: MULTI }));
+  return { day: day.c, night: night.c, lights, star: [ox + cx, oy + 1.5] };
+}
+
+function drawXmas(g, t, env, day) {
+  if (!env.sky.lights) return;
+  const X = (L.xmas ??= buildXmas());
+  blit(g, X.night, XMAS.x, XMAS.y);
+  if (day > 0.01) { g.globalAlpha = day * 0.8; blit(g, X.day, XMAS.x, XMAS.y); g.globalAlpha = 1; }
+  drawLights(g, X.lights, t, env, { size: 0.5, glow: 2 });
+  const night = 1 - env.sky.daylight;
+  glow(g, X.star[0], X.star[1], 6, '#ffe070', (0.25 + 0.5 * night) * (0.85 + 0.15 * Math.sin(t * 1.7)));
+}
+
 // ------------------------------------------------------------------ screens
 
 function code(g, t, x, y, w, rows, speed = 1.4, offset = 20) {
@@ -1159,10 +1220,12 @@ export default {
     drawLit(g, L.city.c, L.cityDay, day);
     if (night > 0.2) animateSkyline(g, L.skyline, t, { glowScale: 0.6 });
     drawTree(g, t, env, dt);
+    drawLights(g, L.outside.lights ??= BRANCHES.flatMap((pts, i) => alongBranch(pts, { seed: 11 + i, spacing: 4 })), t, env);   // holiday lights on the tree
     L.precip.draw(g, dt, env.weather, t);
     if (env.weather === 'rain') paneDrops(g, PANE, t, 1);
     drawLit(g, L.room.c, L.roomDay, day * 0.8);
     drawPosters(g, day);
+    drawXmas(g, t, env, day);
     if (day > 0.3) glow(g, 240, 150, 180, '#dfe8ff', 0.12 * day);
 
     drawTop(g, t);
