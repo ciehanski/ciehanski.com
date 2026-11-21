@@ -720,11 +720,12 @@ $('btn-shuffle').addEventListener('click', () => {
   store.set('shuffle', music.state.shuffle);
 });
 const musicInput = $('vol-music');
-musicInput.value = store.get('musicVolume', 60);
+// A fresh storage key, so visitors who had the old default of 60 get the new, quieter one too.
+musicInput.value = store.get('musicVolume2', 35);
 function setMusicVol(v) {
   musicInput.value = v;
   music?.setVolume((v / 100) ** 2);
-  store.set('musicVolume', +v);
+  store.set('musicVolume2', +v);
   musicInput.style.setProperty('--fill', v + '%');
 }
 musicInput.addEventListener('input', () => setMusicVol(+musicInput.value));

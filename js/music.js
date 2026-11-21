@@ -7,6 +7,23 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   audio.preload = 'none';
   audio.volume = volume;
   const el = audio;
+  let vol = volume;
+  // iPhones ignore <audio>.volume (it always reads back 1). There, route the
+  // audio through a Web Audio gain node so the volume slider still works.
+  const volumeWorks = (() => { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; })();
+  let ctx = null, gain = null;
+  function ensureGain() {
+    if (volumeWorks) return;
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ctx = new AC();
+      gain = ctx.createGain();
+      gain.gain.value = vol;
+      ctx.createMediaElementSource(audio).connect(gain).connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+  }
 
   const state = {
     tracks, index: -1, paused: true, shuffle, loading: false, error: null,
@@ -49,6 +66,7 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
   function play() {
     if (!tracks.length) return;
     if (state.index < 0) { load(order[0], false); }
+    ensureGain();
     state.loading = true;
     emit();
     const p = el.play();
@@ -115,7 +133,7 @@ export function initMusic({ tracks, onState, volume = 0.6, shuffle = true, resum
     prev,
     playIndex(i) { makeOrder(i); load(i, true); },
     seek(frac) { if (state.duration) audio.currentTime = frac * state.duration; },
-    setVolume(v) { audio.volume = v; },
+    setVolume(v) { vol = v; audio.volume = v; if (gain) gain.gain.value = v; },
     setShuffle(on) { state.shuffle = on; makeOrder(state.index >= 0 ? state.index : null); emit(); },
   };
 }

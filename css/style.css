@@ -308,7 +308,6 @@ kbd {
   .btn { width: 36px; height: 36px; }
   .vol { padding: 0 6px; }
   .vol input { width: 64px; }
-  .vol-music { display: none; }
   .chip { height: 30px; padding: 0 11px; font-size: 13px; }
   .chip-state, .chip-time { font-size: 11px; }
   .win-wrap { padding: 64px 8px 140px; }
@@ -319,7 +318,8 @@ kbd {
 }
 @media (max-width: 420px) {
   .chip-scene .chip-time, #btn-scenes { display: none; }
-  .vol input { width: 56px; }
+  .vol { padding: 0 4px; gap: 6px; }
+  .vol input { width: 48px; }
   .place { font-size: 26px; }
 }
 /* Touch screens: finger-sized targets, no sticky hover colours, a press state instead. */
